@@ -4,7 +4,7 @@ A practical playbook for running a club that keeps its license, stays out of cou
 
 ## Why this matters to your bottom line
 
-- **Wage suits are the industry's biggest legal cost.** Courts keep finding that dancers are employees. Verdicts and settlements have run from hundreds of thousands of dollars to more than $10 million. In Ohio, an $800,000 settlement covered dancers at six clubs in 2026.
+- **Wage suits are a constant, expensive risk.** Courts keep finding that dancers are employees. Verdicts and settlements have run from hundreds of thousands of dollars to more than $10 million. In Ohio, an $800,000 settlement covered dancers at six clubs in 2026.
 - **Your liquor permit is your business.** Ohio regulators have revoked permits after undercover investigations found drug sales and illegal contact, and cities object to renewals for clubs with heavy police calls.
 - **Trafficking can cost you everything.** The owner of Pharaoh's Gentlemen's Club near Buffalo, N.Y., was convicted in 2024 of sex trafficking conspiracy and other crimes tied to the club. He got 25 years, and the club closed.
 - **Dancers and customers vote with their feet.** Clubs known for safety, fair fees and honest pricing keep their best entertainers and their regulars.
