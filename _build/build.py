@@ -61,6 +61,7 @@ MD_PAGES = OrderedDict([
     ("guides/etiquette.md", ("etiquette.html", "Etiquette", "person")),
     ("guides/for-dancers.md", ("dancers.html", "For dancers", "heart")),
     ("guides/human-trafficking.md", ("trafficking.html", "Stop trafficking", "shield")),
+    ("guides/why-it-keeps-happening.md", ("why-it-keeps-happening.html", "Why it keeps happening", "alert")),
     ("guides/for-club-operators.md", ("operators.html", "For clubs", "building")),
     ("guides/how-strip-clubs-work.md", ("how-clubs-work.html", "How clubs work", "dollar")),
     ("guides/laws-by-state.md", ("laws.html", "Laws by state", "scale")),
@@ -80,11 +81,14 @@ LINK_MAP = {
     "data/club-info.csv": "claim.html",
     "data/house-fees.csv": "dancer-pay.html",
     "data/dancer-reports.csv": "dancer-pay.html#dancer-reports",
+    "data/stay-away.csv": "stay-away.html",
+    "data/stay-away-records.csv": "stay-away.html",
 }
 
 # Titles for pages, used when a link's text is a bare file name such as "laws-by-state.md".
 PAGE_TITLES = {"index.html": "the home page", "directory.html": "the club directory",
-               "records.html": "the public records", "dancer-pay.html": "dancer pay and house fees"}
+               "records.html": "the public records", "dancer-pay.html": "dancer pay and house fees",
+               "stay-away.html": "the places to stay away from"}
 for _src, (_out, _label, _icon) in MD_PAGES.items():
     _m = re.search(r"^# (.+)$", (ROOT / _src).read_text(encoding="utf-8"), re.M)
     PAGE_TITLES[_out] = _m.group(1).strip() if _m else _label
@@ -121,6 +125,7 @@ ROLES = OrderedDict([
                 ("etiquette.html#before-you-go", "list", "Before you go", "Age limits, hours, cover, cash and a budget"),
                 ("laws.html", "scale", "Know the local rules", "Touching, nudity and alcohol rules change by state"),
                 ("directory.html", "map", "Find a club", "Check it's open and see its public record"),
+                ("stay-away.html", "octagon", "Places to stay away from", "Clubs and bars tied to trafficking in court and agency records"),
             ]),
             ("At the club", [
                 ("etiquette.html#at-the-door", "building", "At the door", "ID, cover and security"),
@@ -173,6 +178,8 @@ ROLES = OrderedDict([
             ]),
             ("Before you audition", [
                 ("directory.html", "map", "Look up the club", "Lawsuits, settlements and permit actions, with sources"),
+                ("stay-away.html", "octagon", "Places to stay away from", "Where trafficking and forced prostitution are on the record"),
+                ("why-it-keeps-happening.html#the-patterns", "alert", "Too good to be true", "Fake job offers, debts and held IDs"),
                 ("laws.html", "scale", "Your state's rules", "Fee caps, training and age limits"),
                 ("standard.html", "check-circle", "What a well-run club does", "The Club Safety Standard"),
             ]),
@@ -239,11 +246,14 @@ ROLES = OrderedDict([
                 ("trafficking.html#dancing-is-not-trafficking", "heart", "Dancing is not trafficking", "Why the difference matters"),
                 ("trafficking.html#signs-to-watch-for", "alert", "Signs to watch for", "What to look for in a club"),
                 ("trafficking.html#advocacy-what-helps", "check-circle", "What helps", "Advocacy that works"),
+                ("why-it-keeps-happening.html", "alert", "Why it keeps happening", "The patterns, why it's hard to stop, and where to get help"),
+                ("stay-away.html", "octagon", "Places to stay away from", "Places tied to trafficking in court and agency records"),
             ]),
             ("The record", [
                 ("directory.html", "map", "Club directory", "Clubs with status and sources"),
                 ("directory.html#by-state", "map", "Clubs by state", "One page for each state"),
                 ("records.html", "file", "Public records", "Convictions, findings, settlements and lawsuits"),
+                ("stay-away.html", "octagon", "Stay away list", "Places closed or convicted over trafficking, and where they came back"),
                 ("method.html", "search", "How we rate", "The rating method"),
                 ("data.html", "list", "Data files", "Download the data"),
                 ("coverage.html", "map", "Coverage plan", "Where the build goes next"),
@@ -309,7 +319,7 @@ STATE_NAMES = {
     "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon",
     "PA": "Pennsylvania", "PR": "Puerto Rico", "RI": "Rhode Island", "SC": "South Carolina",
     "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-    "VA": "Virginia", "VI": "U.S. Virgin Islands", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+    "VA": "Virginia", "VI": "U.S. Virgin Islands", "GU": "Guam", "MP": "Northern Mariana Islands", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
 }
 
 e = html.escape
@@ -369,6 +379,76 @@ TERMS_FIELDS = ("worker_status", "house_fee", "tip_out")
 CLUB_ONLY_FIELDS = ("booking_line", "audition_hours")
 # Fields that count as a hiring notice: allowed only with the dancer terms published.
 HIRING_FIELDS = ("hiring", "apply_url", "booking_line", "audition_hours")
+
+# ---------------------------------------------------------------------------
+# Stay away list: places tied to trafficking or sexual exploitation in primary
+# records. stay-away.csv has one row per place; stay-away-records.csv one row
+# per record. A place goes on "stay-away" only with a conviction, a closure or
+# nuisance order, or a license revocation; anything less is "caution".
+# ---------------------------------------------------------------------------
+SA_LISTS = OrderedDict([
+    ("stay-away", ("Stay away", "octagon", "bad")),
+    ("caution", ("Use caution", "alert", "warn")),
+])
+SA_KINDS = {"club": "Strip club", "hostess-bar": "Hostess bar or cantina", "bar": "Bar or cantina"}
+SA_TYPES = OrderedDict([
+    ("conviction", ("Conviction or guilty plea", "bad")),
+    ("closure-order", ("Closure or nuisance order", "bad")),
+    ("license-revocation", ("License revoked or given up", "bad")),
+    ("reopening", ("Reopened or kept operating", "bad")),
+    ("finding", ("Agency finding", "warn")),
+    ("temporary-order", ("Temporary court order", "warn")),
+    ("license-suspension", ("License suspended", "warn")),
+    ("charge", ("Charged, not convicted", "warn")),
+    ("filing", ("Lawsuit filed", "warn")),
+    ("status", ("Status", "muted")),
+])
+SA_STRONG = {"conviction", "closure-order", "license-revocation"}
+SA_PLACES = read_csv("data/stay-away.csv")
+SA_RECORDS = read_csv("data/stay-away-records.csv")
+SA_RECS_BY_PLACE = OrderedDict()
+SA_BY_CLUB = {}
+
+
+def check_stay_away():
+    ids = set()
+    for pl in SA_PLACES:
+        pid = pl["place_id"]
+        if not re.fullmatch(r"SA-\d{3}", pid) or pid in ids:
+            raise SystemExit(f"stay-away.csv: bad or repeated place_id {pid!r}")
+        ids.add(pid)
+        if pl["list"] not in SA_LISTS or pl["kind"] not in SA_KINDS:
+            raise SystemExit(f"stay-away.csv: {pid} has list {pl['list']!r} or kind {pl['kind']!r} outside the lists")
+        if pl["state"] not in STATE_NAMES:
+            raise SystemExit(f"stay-away.csv: {pid} has unknown state {pl['state']!r}")
+        if pl["club_id"]:
+            if pl["club_id"] not in CLUB_BY_ID:
+                raise SystemExit(f"stay-away.csv: {pid} names club {pl['club_id']!r}, not in clubs.csv")
+            if pl["club_id"] in SA_BY_CLUB:
+                raise SystemExit(f"stay-away.csv: club {pl['club_id']} is on the list twice")
+            SA_BY_CLUB[pl["club_id"]] = pl
+        if not pl["why"].strip():
+            raise SystemExit(f"stay-away.csv: {pid} has no why")
+        SA_RECS_BY_PLACE[pid] = []
+    for r in SA_RECORDS:
+        if r["place_id"] not in ids:
+            raise SystemExit(f"stay-away-records.csv: unknown place {r['place_id']!r}")
+        if r["type"] not in SA_TYPES or r["source_type"] not in SOURCE_TYPE:
+            raise SystemExit(f"stay-away-records.csv: {r['place_id']} has type {r['type']!r} or source {r['source_type']!r} outside the lists")
+        if not re.fullmatch(r"\d{4}(-\d{2}(-\d{2})?)?", r["date"]):
+            raise SystemExit(f"stay-away-records.csv: {r['place_id']} has a bad date {r['date']!r}")
+        if not r["source_url"].startswith("https://") or not r["summary"].strip():
+            raise SystemExit(f"stay-away-records.csv: {r['place_id']} needs an https source and a summary")
+        SA_RECS_BY_PLACE[r["place_id"]].append(r)
+    for pl in SA_PLACES:
+        types = {r["type"] for r in SA_RECS_BY_PLACE[pl["place_id"]]}
+        if not types:
+            raise SystemExit(f"stay-away.csv: {pl['place_id']} has no records")
+        if pl["list"] == "stay-away" and not types & SA_STRONG:
+            raise SystemExit(f"stay-away.csv: {pl['place_id']} is on stay-away without a conviction, closure order or revocation")
+
+
+check_stay_away()
 
 CLUB_INFO = read_csv("data/club-info.csv")
 INFO_BY_CLUB = {}
@@ -771,6 +851,15 @@ def info_badges(club_id):
     return f'<span class="sub">{out}</span>'
 
 
+def sa_badge(club_id):
+    pl = SA_BY_CLUB.get(club_id)
+    if not pl:
+        return ""
+    label, ic, tone = SA_LISTS[pl["list"]]
+    return (f'<span class="sub"><a href="stay-away.html#{e(pl["place_id"])}">{badge(label, ic, tone)}'
+            f'<span class="sr"> list: see why</span></a></span>')
+
+
 def directory_page():
     clubs = sorted(CLUBS, key=lambda c: (STATE_NAMES.get(c["state"], c["state"]), c["city"], c["name"]))
     st_counts = Counter(c["status"] for c in CLUBS)
@@ -790,7 +879,7 @@ def directory_page():
             f'<tr id="{e(c["id"])}" data-state="{e(c["state"])}" data-status="{e(c["status"])}" '
             f'data-text="{e(search_text)}">'
             f'<th scope="row"><a class="clubname" href="{club_page_name(c["id"])}">{e(c["name"])}</a>'
-            f'{info_badges(c["id"])}{address}{operator}{notes}</th>'
+            f'{sa_badge(c["id"])}{info_badges(c["id"])}{address}{operator}{notes}</th>'
             f'<td>{e(c["city"])}</td><td><a href="{state_page_name(c["state"])}"><abbr title="{e(STATE_NAMES.get(c["state"], c["state"]))}">{e(c["state"])}</abbr></a></td>'
             f'<td>{badge(s_label, s_icon, s_tone)}</td><td>{badge(f_label, f_icon, f_tone)}</td>'
             f'<td>{recs}</td><td class="srcs">{source_links(c["sources"])}</td></tr>')
@@ -815,6 +904,7 @@ def directory_page():
 <h1>Club directory</h1>
 <p class="lead">{len(CLUBS)} clubs in {len(states_in_data())} states and territories so far, built from public records. Every listing links to its source.</p>
 <div class="callout">{icon("info")}<p>A listing is not an endorsement, and "not reviewed" means we haven't finished checking, not that a club is safe or unsafe. See <a href="method.html">how we rate clubs</a>. Something wrong? <a href="about.html#corrections">Send a correction</a>.</p></div>
+<p>{icon("octagon")} Clubs marked Stay away or Use caution are on our <a href="stay-away.html">list of places tied to trafficking or sexual exploitation</a> in court and agency records.</p>
 
 <h2 id="by-state">Browse by state</h2>
 {state_links()}
@@ -927,6 +1017,157 @@ def records_page():
                 body, wide=True)
 
 
+MONTHS = ["Jan.", "Feb.", "March", "April", "May", "June", "July", "Aug.", "Sept.", "Oct.", "Nov.", "Dec."]
+
+
+def nice_date(d):
+    parts = d.split("-")
+    if len(parts) == 3:
+        return f"{MONTHS[int(parts[1]) - 1]} {int(parts[2])}, {parts[0]}"
+    if len(parts) == 2:
+        return f"{MONTHS[int(parts[1]) - 1]} {parts[0]}"
+    return d
+
+
+def sa_where(pl):
+    return ", ".join(x for x in [pl["city"], STATE_NAMES.get(pl["state"], pl["state"])] if x)
+
+
+def sa_name(pl):
+    return pl["names"].split(";")[0].strip()
+
+
+def sa_place(pl):
+    pid = pl["place_id"]
+    recs = sorted(SA_RECS_BY_PLACE[pid], key=lambda r: r["date"])
+    label, ic, tone = SA_LISTS[pl["list"]]
+    names = [n.strip() for n in pl["names"].split(";") if n.strip()]
+    newest = max(r["date"] for r in recs)
+    cutoff = str(date.today().year - 5) + date.today().isoformat()[4:]
+    badges = [badge(label, ic, tone), badge(SA_KINDS[pl["kind"]], "building", "muted")]
+    if newest < cutoff[:len(newest)]:
+        badges.append(badge("History: newest record over 5 years old", "info", "muted"))
+    facts = []
+    if len(names) > 1:
+        facts.append(("Other names on the record", e("; ".join(names[1:]))))
+    if pl["address"]:
+        facts.append(("Address on the record", e(pl["address"])))
+    if pl["operators"]:
+        facts.append(("Companies named", e(pl["operators"])))
+    if pl["club_id"]:
+        c = CLUB_BY_ID[pl["club_id"]]
+        facts.append(("In our directory", f'<a href="{club_page_name(c["id"])}">{e(c["name"])}</a>'))
+    dl = f'<dl class="facts">{"".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in facts)}</dl>' if facts else ""
+    items = []
+    for i, r in enumerate(recs, 1):
+        tlabel, ttone = SA_TYPES[r["type"]]
+        src = (f'<a href="{e(r["source_url"])}">{e(SOURCE_TYPE.get(r["source_type"], r["source_type"]))}'
+               f'<span class="sr">: source for record {i} on {e(sa_name(pl))}</span></a>')
+        items.append(f'<li><span class="when"><time datetime="{e(r["date"])}">{e(nice_date(r["date"]))}</time></span> '
+                     f'<span class="rkind {ttone}">{e(tlabel)}</span> <span class="what">{e(r["summary"])}</span> '
+                     f'<span class="src">Source: {src}</span></li>')
+    return f"""<article class="sa {tone}" id="{e(pid)}" data-state="{e(pl["state"])}" aria-labelledby="{e(pid)}-h">
+<h3 id="{e(pid)}-h">{e(sa_name(pl))} <span class="where">{e(sa_where(pl))}</span></h3>
+<p class="badges">{" ".join(badges)}</p>
+<p class="why">{e(pl["why"])}</p>
+{dl}
+<h4 class="sr">Records for {e(sa_name(pl))}, oldest first</h4>
+<ol class="timeline">{"".join(items)}</ol>
+</article>"""
+
+
+def stay_away_page():
+    def sort_key(pl):
+        return (STATE_NAMES.get(pl["state"], pl["state"]), pl["city"], sa_name(pl))
+    convicted = [pl for pl in SA_PLACES if pl["list"] == "stay-away"
+                 and any(r["type"] == "conviction" for r in SA_RECS_BY_PLACE[pl["place_id"]])]
+    closed = [pl for pl in SA_PLACES if pl["list"] == "stay-away" and pl not in convicted]
+    caution = [pl for pl in SA_PLACES if pl["list"] == "caution"]
+    reopened = [pl for pl in SA_PLACES if any(r["type"] == "reopening" for r in SA_RECS_BY_PLACE[pl["place_id"]])]
+    n_stay = len(convicted) + len(closed)
+    groups = [
+        ("g-convicted", "Stay away: convictions", "octagon", convicted,
+         "Someone was convicted or pleaded guilty over trafficking, forced labor or prostitution tied to the place. Each entry says who: the owner, a manager, or an outside trafficker who brought victims there."),
+        ("g-closed", "Stay away: closure orders and revocations", "x-circle", closed,
+         "A court or agency closed the place or took its license over prostitution, trafficking or exploiting a minor. Some were agreed orders without an admission, and each entry says so."),
+        ("g-caution", "Use caution", "alert", caution,
+         "There's a charge, a suspension or a temporary order, or a conviction on other counts, but no trafficking or prostitution conviction or final closure on the record we've read. Charged is not convicted, and a charge may end with no finding."),
+    ]
+    toc, sections = [], []
+    for gid, title, ic, items, plain in groups:
+        toc.append(f'<li><a href="#{gid}">{e(title)}</a> <span class="n">{plural(len(items), "place")}</span></li>')
+        first, _, rest = plain.partition(". ")
+        arts = "\n".join(sa_place(pl) for pl in sorted(items, key=sort_key))
+        sections.append(f"""<section aria-labelledby="{gid}" data-sagroup>
+<h2 id="{gid}">{icon(ic)} {e(title)} <span class="where" data-count>{plural(len(items), "place")}</span></h2>
+<p class="plain"><b>{e(first.rstrip(".") + ".")}</b> {e(rest)}</p>
+{arts}
+</section>""")
+    re_items = "".join(
+        f'<li><a href="#{e(pl["place_id"])}">{e(sa_name(pl))}, {e(sa_where(pl))}</a>: '
+        f'{e(next(r["summary"] for r in SA_RECS_BY_PLACE[pl["place_id"]] if r["type"] == "reopening"))}</li>'
+        for pl in sorted(reopened, key=sort_key))
+    states = sorted({pl["state"] for pl in SA_PLACES}, key=lambda s: STATE_NAMES.get(s, s))
+    opts = "".join(f'<option value="{s}">{e(STATE_NAMES.get(s, s))}</option>' for s in states)
+    n_recs = len(SA_RECORDS)
+    body = f"""
+<h1>Places to stay away from</h1>
+<p class="lead">{len(SA_PLACES)} strip clubs, hostess bars and cantinas tied to trafficking or sexual exploitation in court and government records. Each one lists its records, oldest first, with a link to the source.</p>
+<div class="callout">{icon("scale")}<p>We list a place only on a primary record: a conviction or guilty plea, a court or nuisance order, a license action, or a government release. Never on rumor, reviews or anonymous tips. Convictions and charges are labeled apart, because charged is not convicted. A place may have changed hands since, and each entry says what the record shows about that. Records name places and companies, never dancers or other workers. Owners can <a href="about.html#corrections">respond to any entry</a>.</p></div>
+
+<ul class="stats">
+<li><b>{n_stay}</b> <span>to stay away from</span></li>
+<li><b>{len(caution)}</b> <span>to use caution with</span></li>
+<li><b>{len(reopened)}</b> <span>reopened or kept operating</span></li>
+<li><b>{n_recs}</b> <span>records, each with its source</span></li>
+</ul>
+
+<p>{icon("alert")} Why do these places keep coming back, and why is it so hard to stop? <a href="why-it-keeps-happening.html">Read how it works and how to get help</a>.</p>
+
+<nav aria-labelledby="toc-h" class="panel"><h2 id="toc-h">On this page</h2><ul>
+<li><a href="#g-reopened">Reopened or kept operating</a> <span class="n">{plural(len(reopened), "place")}</span></li>
+{"".join(toc)}
+<li><a href="#how-we-decide">How we decide</a></li>
+<li><a href="#help">Get help or report</a></li>
+</ul></nav>
+
+<section aria-labelledby="g-reopened" class="panel">
+<h2 id="g-reopened">{icon("alert")} Reopened or kept operating</h2>
+<p>A court record shows these places opened again at the same address, or kept running after an order to shut. Both are also listed below.</p>
+<ul>{re_items}</ul>
+</section>
+
+<form id="safilter" class="filters" hidden role="search" aria-label="Filter the list">
+  <div><label for="sa-state">State</label><select id="sa-state" name="state"><option value="">All states and territories</option>{opts}</select></div>
+</form>
+<p id="sashown" role="status" class="shown">Showing all {len(SA_PLACES)} places.</p>
+
+{"".join(sections)}
+
+<section aria-labelledby="how-we-decide">
+<h2 id="how-we-decide">How we decide</h2>
+<ul>
+<li><b>Stay away</b> needs a conviction or guilty plea tied to the place, a court closure or nuisance order, or a license revoked or given up, over trafficking, forced labor, prostitution run or allowed by the business, or a minor exploited there.</li>
+<li><b>Use caution</b> is for a charge, a license suspension or a temporary order on the same grounds, or a conviction on other counts where the record describes sex for money at the place. A charge may end with no finding.</li>
+<li><b>Reopened</b> needs a record that shows the same address, not just a similar name. A club with a similar name somewhere else isn't the same place.</li>
+<li><b>Records older than 5 years</b> are marked as history. A place listed for an old case may be under new owners now.</li>
+<li><b>Not here yet:</b> news reports name dozens more places. They wait until we find a court or agency record, because a news story alone doesn't list a place.</li>
+</ul>
+<p>The full rules are in <a href="method.html#10-the-stay-away-list">how we rate</a>. Download the list: <a href="data/stay-away.csv" download>stay-away.csv</a> and <a href="data/stay-away-records.csv" download>stay-away-records.csv</a>. Field definitions are on the <a href="data.html#stay-awaycsv">data page</a>.</p>
+</section>
+
+<section aria-labelledby="help" class="callout">
+{icon("phone")}<div><h2 id="help">Get help or report</h2>
+<p>If someone is in danger, call <a href="tel:911">911</a>. To report trafficking or get help, call the National Human Trafficking Hotline at <a href="tel:+18883737888">1-888-373-7888</a>, text <a href="sms:233733">233733</a>, or chat at <a href="https://humantraffickinghotline.org/">humantraffickinghotline.org</a>. It's free, confidential and open all day, every day.</p>
+<p>To tip off federal investigators, call the HSI Tip Line at <a href="tel:+18663472423">1-866-347-2423</a>. For a child, call the National Center for Missing and Exploited Children at <a href="tel:+18008435678">1-800-843-5678</a>.</p>
+<p><a href="why-it-keeps-happening.html#getting-help">More on what happens when you call</a></p></div>
+</section>
+"""
+    return page("stay-away.html", "Places to stay away from",
+                f"{n_stay} strip clubs, hostess bars and cantinas to stay away from and {len(caution)} to use caution with, from convictions, closure orders and license actions over trafficking and sexual exploitation. Every entry is sourced.",
+                body, wide=True)
+
+
 def records_table(club, recs):
     rows = []
     for r in sorted(recs, key=lambda r: r["date"] or "0", reverse=True):
@@ -1025,6 +1266,12 @@ def club_page(c):
     dl = "".join(f"<dt>{e(k)}</dt><dd>{v}</dd>" for k, v in facts)
     recs = RECORDS_BY_CLUB.get(c["id"], [])
     rec_html = records_table(c, recs) if recs else "<p>No public records tied to this club yet.</p>"
+    sa = SA_BY_CLUB.get(c["id"])
+    sa_html = ""
+    if sa:
+        label, ic, tone = SA_LISTS[sa["list"]]
+        sa_html = (f'<div class="callout sa-note {tone}">{icon(ic)}<p><b>On our {e(label)} list.</b> {e(sa["why"])} '
+                   f'<a href="stay-away.html#{e(sa["place_id"])}">See the records and sources</a>.</p></div>')
     body = f"""
 <p class="back"><a href="directory.html#{e(c["id"])}">Back to the directory</a> <span aria-hidden="true">|</span> <a href="{state_page_name(c["state"])}">More clubs in {e(STATE_NAMES.get(c["state"], c["state"]))}</a></p>
 <h1>{e(c["name"])}</h1>
@@ -1032,6 +1279,7 @@ def club_page(c):
 
 <section aria-labelledby="record">
 <h2 id="record">Our record</h2>
+{sa_html}
 <dl class="facts">{dl}</dl>
 <h3 id="records-h">Public records</h3>
 {rec_html}
@@ -1442,6 +1690,7 @@ def home_page():
     more_html = tiles([
         ("directory.html", "list", "Club directory", f"{len(CLUBS)} clubs with sources and public records"),
         ("trafficking.html", "shield", "Stop trafficking", "The signs, and what to do when you see them"),
+        ("stay-away.html", "octagon", "Places to stay away from", "Closed or convicted over trafficking, with sources"),
         ("laws.html", "scale", "Laws by state", "Age limits, touching, fees and worker protections"),
         ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
     ])
@@ -1563,9 +1812,11 @@ def main():
     shutil.copy(ROOT / "data/club-info.csv", OUT / "data/club-info.csv")
     shutil.copy(ROOT / "data/house-fees.csv", OUT / "data/house-fees.csv")
     shutil.copy(ROOT / "data/dancer-reports.csv", OUT / "data/dancer-reports.csv")
+    shutil.copy(ROOT / "data/stay-away.csv", OUT / "data/stay-away.csv")
+    shutil.copy(ROOT / "data/stay-away-records.csv", OUT / "data/stay-away-records.csv")
     (OUT / ".nojekyll").write_text("")
 
-    pages = ["index.html", "directory.html", "records.html", "about.html"]
+    pages = ["index.html", "directory.html", "records.html", "stay-away.html", "about.html"]
     for src, (out_name, _label, _icon) in MD_PAGES.items():
         title, desc, body = render_md(src)
         write(out_name, page(out_name, title, desc, body))
@@ -1588,6 +1839,7 @@ def main():
     write("index.html", home_page())
     write("directory.html", directory_page())
     write("records.html", records_page())
+    write("stay-away.html", stay_away_page())
     write("about.html", about_page())
     write("404.html", not_found_page())
 

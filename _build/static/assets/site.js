@@ -85,6 +85,40 @@
     if (rsel.value) { rrun(); }
   }
 
+  // Stay away list filter. Every place shows without JavaScript.
+  var sform = document.getElementById("safilter");
+  if (sform) {
+    var ssel = sform.elements.state;
+    var sitems = Array.prototype.slice.call(document.querySelectorAll("[data-sagroup] article[data-state]"));
+    var sgroups = Array.prototype.slice.call(document.querySelectorAll("[data-sagroup]"));
+    var sout = document.getElementById("sashown");
+    var srun = function () {
+      var st = ssel.value;
+      var n = 0;
+      sitems.forEach(function (a) {
+        var ok = !st || a.dataset.state === st;
+        a.hidden = !ok;
+        if (ok) { n += 1; }
+      });
+      sgroups.forEach(function (g) {
+        var shown = g.querySelectorAll("article[data-state]:not([hidden])").length;
+        g.hidden = shown === 0;
+        var c = g.querySelector("[data-count]");
+        if (c) { c.textContent = shown + (shown === 1 ? " place" : " places"); }
+      });
+      var name = st ? ssel.options[ssel.selectedIndex].text : "";
+      sout.textContent = st
+        ? "Showing " + n + " of " + sitems.length + " places, in " + name + "."
+        : "Showing all " + sitems.length + " places.";
+    };
+    var ssm = /[?&]state=([A-Z]{2})/.exec(window.location.search);
+    if (ssm && ssel.querySelector('option[value="' + ssm[1] + '"]')) { ssel.value = ssm[1]; }
+    sform.hidden = false;
+    sform.addEventListener("change", srun);
+    sform.addEventListener("submit", function (ev) { ev.preventDefault(); srun(); });
+    if (ssel.value) { srun(); }
+  }
+
   // Claim form: pick the club named in the address (?club=OH-0001), and, when
   // claims go by email, open the visitor's email app with the details filled in.
   var claim = document.getElementById("claim");

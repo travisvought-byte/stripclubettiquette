@@ -1,6 +1,6 @@
 # Data files
 
-Five CSV files: UTF-8, comma-separated, with double quotes around any field that contains a comma.
+Seven CSV files: UTF-8, comma-separated, with double quotes around any field that contains a comma.
 
 To add new research, run `python3 _build/import_research.py CLUBS_CSV RECORDS_CSV` (pass `-` to skip either file, and add `--dry-run` to see the counts first). It merges new clubs into `clubs.csv` and records into `evidence.csv`, skips anything already there, publishes only records checked against the primary record, and stops without writing anything if a row has a value outside the lists below. Running it again on the same files adds nothing.
 
@@ -116,3 +116,34 @@ Anonymous reports from dancers about what a club charges. Numbers and dates only
 | `added` | Date the report was reviewed and added (YYYY-MM-DD) |
 
 The build stops if a row breaks a rule.
+
+## stay-away.csv
+
+One row per place on the [stay-away list](../METHODOLOGY.md#10-the-stay-away-list).
+
+| Field | Meaning |
+|---|---|
+| `place_id` | `SA-001` and up. Never reused. |
+| `list` | `stay-away` or `caution` |
+| `kind` | `club` (strip club), `hostess-bar` (hostess bar or cantina where women keep customers company), or `bar` |
+| `names` | Names on the records, separated by `;`. The first is the one we show. |
+| `city`, `state` | As the record gives them. "Portland area" or "Houston area" when the record names only the area. |
+| `address` | Street address, only when a primary record gives it |
+| `operators` | Companies a record names, separated by `;`. Never an individual. |
+| `club_id` | Matches `id` in `clubs.csv` when the place is in the directory and the match is confirmed. Blank otherwise. |
+| `why` | One to three plain sentences on why it's listed |
+| `added` | Date added (YYYY-MM-DD) |
+
+## stay-away-records.csv
+
+One row per record per place, all from primary sources.
+
+| Field | Meaning |
+|---|---|
+| `place_id` | Matches `place_id` in `stay-away.csv` |
+| `date` | Date of the event (YYYY-MM-DD, YYYY-MM or YYYY) |
+| `type` | `conviction` (including a guilty plea), `closure-order` (closure or nuisance order), `license-revocation` (revoked, cancelled or surrendered), `reopening` (reopened at the same address or kept operating after an order), `finding`, `temporary-order`, `license-suspension`, `charge`, `filing` (lawsuit), or `status` |
+| `summary` | One to three neutral sentences in our words, attributed to the source |
+| `source_url` | Link to the court record, agency release or filing |
+| `source_type` | `court`, `agency` or `company-filing` |
+

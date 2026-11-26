@@ -7,7 +7,7 @@ What trafficking is, how it shows up in clubs, the signs to watch for, and what 
 | Who | How |
 |---|---|
 | **Emergency** | 911 |
-| **National Human Trafficking Hotline** | Call 1-888-373-7888, text 233733, or chat at [humantraffickinghotline.org/chat](https://humantraffickinghotline.org/chat). TTY 711. Free, confidential, 24/7, in 200+ languages. Run by Polaris, a nonprofit. It is not law enforcement or immigration. |
+| **National Human Trafficking Hotline** | Call 1-888-373-7888, text 233733, or chat at [humantraffickinghotline.org/chat](https://humantraffickinghotline.org/chat). TTY 711. Free, confidential, 24/7, in 200+ languages. Run by Compass Connections, a nonprofit, since September 2025 ([hotline FAQ](https://humantraffickinghotline.org/en/about-us/hotline-faqs)). It is not law enforcement or immigration. |
 | **Ohio Human Trafficking Hotline** | 844-END-OHHT (844-363-6448), text ENDOHHT to 847411, or use the END OHHT app. Run 24/7 by the Ohio Bureau of Criminal Investigation. Tips go straight to law enforcement. Non-emergency. |
 | **Missing or exploited children** | National Center for Missing & Exploited Children: 1-800-THE-LOST (1-800-843-5678) |
 | **Federal law enforcement tip line** | DHS Homeland Security Investigations: 1-866-347-2423 |
@@ -32,6 +32,8 @@ Trafficking is about control. The question isn't "is this person dancing?" It's 
 - **Control through debt and violence.** Polaris found victims in this category are often trapped by debts they can't repay, and many face beatings, sexual assault and threats against their families.
 - **Sometimes it's the club itself.** In December 2024 a federal jury convicted the owner of Pharaoh's Gentlemen's Club, outside Buffalo, N.Y., of sex trafficking conspiracy, bribing a DEA agent, maintaining a drug-involved premises, witness tampering and drug crimes. Prosecutors said drugs and coercion were used to force dancers into sex acts inside the club. In May 2026 he was sentenced to 25 years. The club closed.
 - **"Extras" in private rooms.** A club that tolerates sex for money in VIP rooms creates the market traffickers exploit.
+
+Some places have been closed or convicted over trafficking, and a few have come back at the same address. See the [places to stay away from](../data/stay-away.csv), and [why it keeps happening](why-it-keeps-happening.md): the patterns, why it's hard to stop, and how to get help.
 
 ## Signs to watch for
 
