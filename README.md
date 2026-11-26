@@ -62,14 +62,8 @@ The guides and data are published as a static website. The Markdown and CSV file
 - Club pages: every club gets its own page (`club-oh-0001.html` and so on) with our record and, when the club has given them, its own hours, prices and dancer terms from `data/club-info.csv`. Clubs claim their listing on `claim.html`.
 - Settings at the top of `_build/build.py`: `SITE_URL` (turns on canonical links and the sitemap), `GOATCOUNTER` (visit counter code), `CONTACT_EMAIL`, and `CLAIM_FORM_URL` or `CLAIM_EMAIL` (where club claims go; until one is set, the claim page lists what we'll ask for and says claims open at launch).
 - Domain: `stripclubguide.org`, registered at Wix. The build writes canonical links, the sitemap and a `CNAME` file for it.
-- Publishing is off. To go live, in this order:
-  1. Make the repository public (GitHub Pages on a private repository needs a paid plan).
-  2. Set Pages to deploy from GitHub Actions and set the repository variable `PAGES_ENABLED` to `true`.
-  3. In Settings, Pages, enter `stripclubguide.org` as the custom domain. With Actions deploys, GitHub reads the domain from this setting, not from the `CNAME` file.
-  4. At Wix, under the domain's DNS records, add four A records for the bare domain (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) and a CNAME record for `www` pointing to `travisvought-byte.github.io`. Remove any Wix A or CNAME records they replace.
-  5. Once the DNS check in Pages settings passes, tick Enforce HTTPS.
-
-  Add the DNS records only after step 3. Records that point at GitHub Pages before a repository claims the domain let anyone else's Pages site take it over.
+- Publishing: every push to `main` builds, checks and publishes the site to GitHub Pages. Pages deploys from GitHub Actions, with `stripclubguide.org` set as the custom domain in Settings, Pages (with Actions deploys, GitHub reads the domain from that setting, not from the `CNAME` file).
+- DNS at Wix: four A records for the bare domain (`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`) and a CNAME record for `www` pointing to `travisvought-byte.github.io`. HTTPS is enforced in Settings, Pages.
 - Not published on the site: the Ohio "Open leads" list, which holds unconfirmed addresses.
 
 ## Corrections and contributions
