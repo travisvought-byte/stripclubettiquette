@@ -138,6 +138,7 @@ def main():
             if re.match(r"^(https?:|mailto:|tel:|sms:)", href):
                 continue
             target, _, anchor = href.partition("#")
+            target = target.split("?", 1)[0]
             target_name = target or name
             if target_name.endswith(".csv"):
                 if not (SITE / target_name).exists():

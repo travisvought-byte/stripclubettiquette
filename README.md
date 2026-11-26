@@ -29,6 +29,7 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 | [METHODOLOGY.md](METHODOLOGY.md) | How clubs get listed, verified and rated, and how corrections work |
 | [data/clubs.csv](data/clubs.csv) | The directory |
 | [data/evidence.csv](data/evidence.csv) | Public records (lawsuits, permit actions, convictions) tied to specific clubs |
+| [data/club-info.csv](data/club-info.csv) | Hours, prices and dancer terms that clubs give us themselves, shown as "What the club says" |
 | [data/README.md](data/README.md) | Field definitions for both data files |
 | [research/national.md](research/national.md) | National scope, counts and build plan |
 | [research/ohio.md](research/ohio.md) | Ohio coverage, sources, key cases and open leads |
@@ -58,7 +59,8 @@ The guides and data are published as a static website. The Markdown and CSV file
 - Build: `pip install -r _build/requirements.txt`, then `python3 _build/build.py`. The site lands in `_site/`.
 - Check: `python3 _build/check.py` fails on broken links, missing anchors, missing labels, heading jumps or low color contrast. GitHub Actions runs the build and the check on every pull request and every push to `main`.
 - Accessibility: built to WCAG 2.1 AA. Every page has a skip link, a help bar with the hotline (call and text) and a quick exit button, labeled landmarks, scrollable tables with headers, icons paired with words, light and dark mode, and works without JavaScript.
-- Settings at the top of `_build/build.py`: `SITE_URL` (turns on canonical links and the sitemap), `GOATCOUNTER` (visit counter code), `CONTACT_EMAIL`.
+- Club pages: every club gets its own page (`club-oh-0001.html` and so on) with our record and, when the club has given them, its own hours, prices and dancer terms from `data/club-info.csv`. Clubs claim their listing on `claim.html`.
+- Settings at the top of `_build/build.py`: `SITE_URL` (turns on canonical links and the sitemap), `GOATCOUNTER` (visit counter code), `CONTACT_EMAIL`, and `CLAIM_FORM_URL` or `CLAIM_EMAIL` (where club claims go; until one is set, the claim page lists what we'll ask for and says claims open at launch).
 - Publishing is off. To go live: make the repository public (GitHub Pages on a private repository needs a paid plan), set Pages to deploy from GitHub Actions, and set the repository variable `PAGES_ENABLED` to `true`.
 - Not published on the site: the Ohio "Open leads" list, which holds unconfirmed addresses.
 

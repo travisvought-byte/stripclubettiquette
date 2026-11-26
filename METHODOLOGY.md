@@ -75,6 +75,17 @@ The club's overall flag is the worst of its five. Records older than 5 years sta
 - Clubs in other states: every 180 days.
 - Closed clubs: once a year, to catch reopenings.
 
+## 8. Club-supplied details
+
+Clubs can add their own hours, prices and dancer terms to their listing, free.
+
+- **Who counts as the club:** we confirm the sender by calling the club's publicly listed number, or by matching them to the liquor permit holder or the business filing. We record how.
+- **How it's shown:** under "What the club says," in the club's words, with the date. Details copied from a club's own website are labeled that way until the club claims the listing.
+- **Ratings:** club-supplied details never change a rating. Ratings come from public records and published policies only (section 4).
+- **Hiring notices:** shown only when the club also publishes how dancers are classified, its house fee and its tip-out. Fake job offers are a known way traffickers recruit, so a hiring notice without terms isn't published.
+- **What we won't publish:** names, stage names, photos or contact details for dancers or staff; prices for anything beyond the posted menu (cover, drinks, dances, VIP time); anything explicit or suggesting anything beyond legal entertainment.
+- **Freshness:** details older than 180 days are marked as possibly out of date. We remove details we find to be false.
+
 ## Corrections and responses
 
 Any club, dancer or member of the public can request a correction. Send the club, what's wrong, and a source. A club can also submit a short written response to any record, and we'll link it next to that record.

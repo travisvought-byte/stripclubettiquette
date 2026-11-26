@@ -38,6 +38,14 @@ GOATCOUNTER = ""
 # Where corrections go. The issues page works once the repository is public.
 CONTACT_EMAIL = ""
 REPO_URL = "https://github.com/travisvought-byte/stripclubettiquette"
+# Where club claims go. Set one: CLAIM_FORM_URL is a form service's address that
+# takes a POST; CLAIM_EMAIL opens the visitor's email app with the claim filled
+# in. With neither set, the claim page lists what we'll ask for and says claims
+# open at launch. Never use a Veteran Home Guardians address.
+CLAIM_FORM_URL = ""
+CLAIM_EMAIL = ""
+# Club-supplied details older than this many days are marked as possibly out of date.
+CLUB_INFO_STALE_DAYS = 180
 
 # ---------------------------------------------------------------------------
 # Pages made from Markdown files: source -> (output, short label, icon)
@@ -61,6 +69,7 @@ LINK_MAP = {
     "README.md": "index.html",
     "data/clubs.csv": "directory.html",
     "data/evidence.csv": "records.html",
+    "data/club-info.csv": "claim.html",
 }
 
 # Titles for pages, used when a link's text is a bare file name such as "laws-by-state.md".
@@ -179,6 +188,7 @@ ROLES = OrderedDict([
                 ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
             ]),
             ("Your listing", [
+                ("claim.html", "checkbox", "Claim your listing", "Add your hours, prices and dancer terms, free"),
                 ("directory.html", "map", "See your listing", "Status, records and sources"),
                 ("method.html", "search", "How we rate clubs", "Records, not rumor"),
                 ("about.html#corrections", "file", "Correct or respond", "Fix a listing or answer a record"),
@@ -313,6 +323,84 @@ CLUB_BY_ID = {c["id"]: c for c in CLUBS}
 RECORDS_BY_CLUB = OrderedDict()
 for rec in EVIDENCE:
     RECORDS_BY_CLUB.setdefault(rec["club_id"], []).append(rec)
+
+# Details a club gives us itself ("club says"). Shown beside our own record and
+# never used in a rating. Field order here is the order on the page.
+CLUB_INFO_GROUPS = [
+    ("Visiting", "person", [
+        ("hours", "Hours"), ("cover", "Cover charge"), ("min_age", "Age limit"),
+        ("dress_code", "Dress code"), ("alcohol", "Drinks"), ("payment", "Payment"),
+        ("card_fee", "Fee on cards or club currency"), ("private_dance", "Private dance"),
+        ("vip", "VIP room"),
+    ]),
+    ("Dancers", "heart", [
+        ("worker_status", "Dancers work as"), ("house_fee", "House fee"), ("tip_out", "Tip-out"),
+        ("hiring", "Hiring now"), ("apply_url", "How to apply"),
+    ]),
+    ("Safety", "shield", [
+        ("security_private_rooms", "Security in private rooms"),
+        ("trafficking_training", "Staff trained on trafficking every year"),
+        ("hotline_posted", "Trafficking hotline posted for dancers and staff"),
+    ]),
+]
+YES_NO_FIELDS = {"hiring", "security_private_rooms", "trafficking_training", "hotline_posted"}
+WORKER_STATUS = {"employee": "Employees", "contractor": "Independent contractors",
+                 "both": "Some employees, some contractors"}
+TERMS_FIELDS = ("worker_status", "house_fee", "tip_out")
+
+CLUB_INFO = read_csv("data/club-info.csv")
+INFO_BY_CLUB = {}
+
+
+def check_club_info():
+    """Stop the build on club-supplied rows that break the rules in data/README.md."""
+    errs = []
+    for n, row in enumerate(CLUB_INFO, 2):
+        where = f"data/club-info.csv line {n}"
+        cid = row["id"]
+        if cid not in CLUB_BY_ID:
+            errs.append(f"{where}: id {cid!r} isn't in clubs.csv")
+        if cid in INFO_BY_CLUB:
+            errs.append(f"{where}: {cid} appears more than once")
+        try:
+            date.fromisoformat(row["updated"])
+        except ValueError:
+            errs.append(f"{where}: updated must be a real date, YYYY-MM-DD")
+        if row["claimed"] not in ("yes", "no"):
+            errs.append(f"{where}: claimed must be yes or no")
+        if row["claimed"] == "yes" and not row["verified_by"].strip():
+            errs.append(f"{where}: a claimed listing needs verified_by")
+        if row["claimed"] == "no" and not row["source_url"].startswith("https://"):
+            errs.append(f"{where}: details not sent by the club need the club's own page in source_url")
+        if row["min_age"] not in ("", "18", "21"):
+            errs.append(f"{where}: min_age must be 18, 21 or blank")
+        if row["worker_status"] not in ("", *WORKER_STATUS):
+            errs.append(f"{where}: worker_status must be employee, contractor, both or blank")
+        for f in YES_NO_FIELDS:
+            if row[f] not in ("", "yes", "no"):
+                errs.append(f"{where}: {f} must be yes, no or blank")
+        if row["apply_url"] and not row["apply_url"].startswith("https://"):
+            errs.append(f"{where}: apply_url must start with https://")
+        if (row["hiring"] == "yes" or row["apply_url"]) and not all(row[f].strip() for f in TERMS_FIELDS):
+            errs.append(f"{where}: a hiring notice needs worker_status, house_fee and tip_out published")
+        INFO_BY_CLUB[cid] = row
+    if errs:
+        raise SystemExit("Club info problems:\n" + "\n".join(errs))
+
+
+check_club_info()
+
+
+def club_page_name(club_id):
+    return f"club-{club_id.lower()}.html"
+
+
+def has_terms(info):
+    return bool(info) and all(info[f].strip() for f in TERMS_FIELDS)
+
+
+def info_is_stale(info):
+    return (date.today() - date.fromisoformat(info["updated"])).days > CLUB_INFO_STALE_DAYS
 
 
 # ---------------------------------------------------------------------------
@@ -506,6 +594,16 @@ def source_links(sources):
     return ", ".join(links) if links else "None"
 
 
+def info_badges(club_id):
+    info = INFO_BY_CLUB.get(club_id)
+    if not info:
+        return ""
+    out = badge("Club details", "info", "info")
+    if has_terms(info):
+        out += " " + badge("Dancer terms published", "check-circle", "ok")
+    return f'<span class="sub">{out}</span>'
+
+
 def directory_page():
     clubs = sorted(CLUBS, key=lambda c: (STATE_NAMES.get(c["state"], c["state"]), c["city"], c["name"]))
     st_counts = Counter(c["status"] for c in CLUBS)
@@ -524,7 +622,8 @@ def directory_page():
         rows.append(
             f'<tr id="{e(c["id"])}" data-state="{e(c["state"])}" data-status="{e(c["status"])}" '
             f'data-text="{e(search_text)}">'
-            f'<th scope="row"><span class="clubname">{e(c["name"])}</span>{address}{operator}{notes}</th>'
+            f'<th scope="row"><a class="clubname" href="{club_page_name(c["id"])}">{e(c["name"])}</a>'
+            f'{info_badges(c["id"])}{address}{operator}{notes}</th>'
             f'<td>{e(c["city"])}</td><td><abbr title="{e(STATE_NAMES.get(c["state"], c["state"]))}">{e(c["state"])}</abbr></td>'
             f'<td>{badge(s_label, s_icon, s_tone)}</td><td>{badge(f_label, f_icon, f_tone)}</td>'
             f'<td>{recs}</td><td class="srcs">{source_links(c["sources"])}</td></tr>')
@@ -571,7 +670,7 @@ def directory_page():
 <ul class="legend">{status_legend}</ul>
 <h2 id="rating-key">What the rating means</h2>
 <ul class="legend">{flag_legend}</ul>
-<p>Download the data: <a href="data/clubs.csv" download>clubs.csv</a> and <a href="data/evidence.csv" download>evidence.csv</a>. Field definitions are on the <a href="data.html">data page</a>.</p>
+<p>Download the data: <a href="data/clubs.csv" download>clubs.csv</a>, <a href="data/evidence.csv" download>evidence.csv</a> and <a href="data/club-info.csv" download>club-info.csv</a>. Field definitions are on the <a href="data.html">data page</a>.</p>
 """
     return page("directory.html", "Club directory",
                 f"A sourced directory of {len(CLUBS)} U.S. strip clubs, with status and public records for each.", body,
@@ -602,7 +701,7 @@ def records_page():
 <div class="tablewrap" role="region" tabindex="0" aria-label="Records for {e(club["name"])}">
 <table class="records"><thead><tr><th scope="col">Date</th><th scope="col">Area</th><th scope="col">Type</th><th scope="col">What the record says</th><th scope="col">Source</th><th scope="col">Checked against the primary record</th></tr></thead>
 <tbody>{"".join(rows)}</tbody></table></div>
-<p class="back"><a href="directory.html#{e(club_id)}">Back to {e(club["name"])} in the directory</a></p>
+<p class="back"><a href="{club_page_name(club_id)}">More about {e(club["name"])}</a></p>
 </section>""")
     types = Counter(r["type"] for r in EVIDENCE)
     type_list = ", ".join(f"{n} {RECORD_TYPE.get(t, t).lower()}{'s' if n != 1 else ''}" for t, n in types.most_common())
@@ -615,6 +714,213 @@ def records_page():
     return page("records.html", "Public records",
                 f"{len(EVIDENCE)} sourced public records (lawsuits, settlements, permit actions and convictions) tied to specific clubs.",
                 body, wide=True)
+
+
+def records_table(club, recs):
+    rows = []
+    for r in sorted(recs, key=lambda r: r["date"] or "0", reverse=True):
+        src = (f'<a href="{e(r["source_url"])}">{e(SOURCE_TYPE.get(r["source_type"], r["source_type"]))}'
+               f'<span class="sr"> source for {e(r["evidence_id"])}</span></a>')
+        checked = "Yes" if r["primary_confirmed"] == "yes" else "Not yet"
+        rows.append(
+            f'<tr><td>{e(r["date"] or "Date to confirm")}</td>'
+            f'<td>{e(DIMENSION.get(r["dimension"], r["dimension"]))}</td>'
+            f'<td><span class="rtype {e(r["type"])}">{e(RECORD_TYPE.get(r["type"], r["type"]))}</span></td>'
+            f'<td>{e(r["summary"])}</td><td>{src}</td><td>{checked}</td></tr>')
+    return (f'<div class="tablewrap" role="region" tabindex="0" aria-label="Records for {e(club["name"])}">'
+            '<table class="records"><thead><tr><th scope="col">Date</th><th scope="col">Area</th>'
+            '<th scope="col">Type</th><th scope="col">What the record says</th><th scope="col">Source</th>'
+            '<th scope="col">Checked against the primary record</th></tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody></table></div>')
+
+
+def info_value(field, value):
+    if field == "min_age":
+        return f"{e(value)} and up"
+    if field == "worker_status":
+        return e(WORKER_STATUS[value])
+    if field in YES_NO_FIELDS:
+        return "Yes" if value == "yes" else "No"
+    if field == "apply_url":
+        host = re.sub(r"^www\.", "", re.sub(r"^https?://([^/]+).*$", r"\1", value))
+        return f'<a href="{e(value)}">The club\'s application page<span class="sr"> on {e(host)}</span></a>'
+    return e(value)
+
+
+def club_info_section(c):
+    info = INFO_BY_CLUB.get(c["id"])
+    claim = f'claim.html?club={e(c["id"])}'
+    if not info:
+        return f"""<section aria-labelledby="says">
+<h2 id="says">What the club says</h2>
+<p>This club hasn't given us its hours, prices or dancer terms yet.</p>
+<p><a class="btnlink" href="{claim}">{icon("building")}<span>Is this your club? Add your details, free</span></a></p>
+</section>"""
+    if info["claimed"] == "yes":
+        origin = f'Sent by the club and confirmed by {e(info["verified_by"])}. Last updated {e(info["updated"])}.'
+    else:
+        host = re.sub(r"^www\.", "", re.sub(r"^https?://([^/]+).*$", r"\1", info["source_url"]))
+        origin = (f'From the club\'s own page at <a href="{e(info["source_url"])}">{e(host)}</a>, '
+                  f'checked {e(info["updated"])}. The club hasn\'t claimed this listing yet.')
+    stale = (f'<p>{badge("May be out of date", "alert", "warn")} These details are more than '
+             f'{CLUB_INFO_STALE_DAYS} days old.</p>') if info_is_stale(info) else ""
+    groups = []
+    for title, ic, fields in CLUB_INFO_GROUPS:
+        items = [(label, info_value(f, info[f])) for f, label in fields if info[f].strip()]
+        if title == "Dancers" and not has_terms(info):
+            items = [(label, val) for (label, val) in items
+                     if label not in ("Hiring now", "How to apply")]
+        if not items:
+            continue
+        dl = "".join(f"<dt>{e(label)}</dt><dd>{val}</dd>" for label, val in items)
+        gid = "says-" + title.lower()
+        groups.append(f'<h3 id="{gid}">{icon(ic)} {e(title)}</h3><dl class="facts">{dl}</dl>')
+    terms = (f'<p>{badge("Dancer terms published", "check-circle", "ok")} This club has published how dancers '
+             f'are classified, its house fee and its tip-out.</p>') if has_terms(info) else ""
+    return f"""<section aria-labelledby="says">
+<h2 id="says">What the club says</h2>
+<div class="callout">{icon("info")}<p>These are the club's own words. We don't vouch for them, and they never change the rating. {origin}</p></div>
+{stale}{terms}
+{"".join(groups)}
+<p><a href="{claim}">Is this your club? Update these details</a></p>
+</section>"""
+
+
+def club_page(c):
+    s_label, s_icon, s_tone = STATUS.get(c["status"], (c["status"], "question", "muted"))
+    f_label, f_icon, f_tone = FLAG.get(c["overall_flag"], (c["overall_flag"], "question", "muted"))
+    where = ", ".join(x for x in [c["city"], STATE_NAMES.get(c["state"], c["state"])] if x)
+    facts = [("Status", badge(s_label, s_icon, s_tone)), ("Rating", badge(f_label, f_icon, f_tone))]
+    if c["address"]:
+        facts.append(("Address", e(c["address"])))
+    if c["operator"]:
+        facts.append(("Operator", e(c["operator"])))
+    if c["alcohol"] in ("yes", "no", "byob"):
+        facts.append(("Alcohol", {"yes": "Serves alcohol", "no": "No alcohol", "byob": "Bring your own"}[c["alcohol"]]))
+    if c["website"]:
+        facts.append(("Website", f'<a href="{e(c["website"])}">{e(c["website"])}</a>'))
+    facts.append(("Last researched", e(c["last_researched"] or "Not yet")))
+    facts.append(("Sources", source_links(c["sources"])))
+    if c["notes"]:
+        facts.append(("Notes", e(c["notes"])))
+    dl = "".join(f"<dt>{e(k)}</dt><dd>{v}</dd>" for k, v in facts)
+    recs = RECORDS_BY_CLUB.get(c["id"], [])
+    rec_html = records_table(c, recs) if recs else "<p>No public records tied to this club yet.</p>"
+    body = f"""
+<p class="back"><a href="directory.html#{e(c["id"])}">Back to the directory</a></p>
+<h1>{e(c["name"])}</h1>
+<p class="lead">{e(where)}</p>
+
+<section aria-labelledby="record">
+<h2 id="record">Our record</h2>
+<dl class="facts">{dl}</dl>
+<h3 id="records-h">Public records</h3>
+{rec_html}
+<p>A lawsuit or a charge is an allegation, not a finding. See <a href="method.html">how we rate clubs</a>, or <a href="about.html#corrections">send a correction</a>.</p>
+</section>
+
+{club_info_section(c)}
+"""
+    title = f'{c["name"]}, {c["city"]}' if c["city"] else c["name"]
+    return page(club_page_name(c["id"]), title,
+                f'{c["name"]} in {where}: listing status, public records, and details from the club itself.', body)
+
+
+CLAIM_ASK = [
+    ("About you", [
+        ("claimant_name", "Your name", "text", True),
+        ("claimant_role", "Your role at the club", "text", True),
+        ("claimant_phone", "Phone number", "tel", True),
+        ("claimant_email", "Email", "email", True),
+    ]),
+    ("Visiting", [(f, label, "text", False) for f, label in CLUB_INFO_GROUPS[0][2]]),
+    ("Dancers", [(f, label, "text", False) for f, label in CLUB_INFO_GROUPS[1][2]]),
+    ("Safety", [(f, label, "text", False) for f, label in CLUB_INFO_GROUPS[2][2]]),
+]
+SELECT_CHOICES = {
+    "min_age": [("", "Choose"), ("18", "18 and up"), ("21", "21 and up")],
+    "worker_status": [("", "Choose"), ("employee", "Employees"), ("contractor", "Independent contractors"),
+                      ("both", "Some of each")],
+    **{f: [("", "Choose"), ("yes", "Yes"), ("no", "No")] for f in YES_NO_FIELDS},
+}
+
+
+def claim_form():
+    clubs = sorted(CLUBS, key=lambda c: (STATE_NAMES.get(c["state"], c["state"]), c["city"], c["name"]))
+    opts = "".join(f'<option value="{e(c["id"])}">{e(c["name"])}, {e(c["city"])}, {e(c["state"])}</option>'
+                   for c in clubs if c["status"] != "closed")
+    fieldsets = [f"""<fieldset><legend>Your club</legend>
+<div class="field"><label for="club">Club</label><select id="club" name="club" required><option value="">Choose your club</option>{opts}<option value="new">My club isn't listed</option></select></div>
+<div class="field"><label for="club_new">If it isn't listed: club name, city and state</label><input id="club_new" name="club_new" type="text"></div>
+</fieldset>"""]
+    for legend, fields in CLAIM_ASK:
+        rows = []
+        for f, label, typ, req in fields:
+            r = " required" if req else ""
+            auto = {"claimant_name": "name", "claimant_phone": "tel", "claimant_email": "email"}.get(f)
+            ac = f' autocomplete="{auto}"' if auto else ""
+            if f in SELECT_CHOICES:
+                o = "".join(f'<option value="{v}">{e(t)}</option>' for v, t in SELECT_CHOICES[f])
+                ctl = f'<select id="{f}" name="{f}"{r}>{o}</select>'
+            else:
+                t = "url" if f == "apply_url" else typ
+                ctl = f'<input id="{f}" name="{f}" type="{t}"{r}{ac}>'
+            rows.append(f'<div class="field"><label for="{f}">{e(label)}{" (required)" if req else ""}</label>{ctl}</div>')
+        fieldsets.append(f'<fieldset><legend>{e(legend)}</legend>{"".join(rows)}</fieldset>')
+    if CLAIM_FORM_URL:
+        attrs = f'action="{e(CLAIM_FORM_URL)}" method="post"'
+    else:
+        attrs = f'action="mailto:{e(CLAIM_EMAIL)}?subject=Club%20listing%20claim" method="post" enctype="text/plain" data-mailto="{e(CLAIM_EMAIL)}"'
+    return f"""<form id="claim" class="claimform" {attrs}>
+{"".join(fieldsets)}
+<p><button type="submit">Send my club's details</button></p>
+</form>"""
+
+
+def claim_page():
+    if CLAIM_FORM_URL or CLAIM_EMAIL:
+        form_html = f'<section aria-labelledby="form-h"><h2 id="form-h">Send your details</h2>{claim_form()}</section>'
+    else:
+        asks = "".join(f'<li class="todo"><span class="box" aria-hidden="true"></span>{e(label)}</li>'
+                       for _t, _i, fields in CLUB_INFO_GROUPS for _f, label in fields)
+        form_html = f"""<section aria-labelledby="form-h" class="panel">
+<h2 id="form-h">What we'll ask for</h2>
+<p>Claims open when the site launches. Every field is optional except who you are and how to reach you.</p>
+<ul class="checklist">{asks}</ul>
+</section>"""
+    steps = [
+        ("file", "Send your details", "Hours, prices and dancer terms, in the form below. It's free."),
+        ("phone", "We confirm you speak for the club", "We call the club's public phone number, or match you to the liquor permit or business filing."),
+        ("check-circle", "We publish them as the club's word", "Labeled \u201cWhat the club says,\u201d with the date, beside our own record."),
+        ("list", "Keep them current", f"Send changes any time. Details older than {CLUB_INFO_STALE_DAYS} days are marked as possibly out of date."),
+    ]
+    step_html = "".join(f'<li><span class="pic">{icon(ic)}</span><span><b>{e(t)}</b> {e(d)}</span></li>' for ic, t, d in steps)
+    body = f"""
+<h1>Claim your club's listing</h1>
+<p class="lead">Keep your hours, prices and dancer terms current in one place customers and dancers already check. It's free, and it never changes your rating.</p>
+
+<section aria-labelledby="how-h">
+<h2 id="how-h">How it works</h2>
+<ol class="steps">{step_html}</ol>
+</section>
+
+<section aria-labelledby="rules-h">
+<h2 id="rules-h">What we publish, and what we don't</h2>
+<ul>
+<li>Your details appear as your own words, never as our finding, and they never change your rating. <a href="method.html">Ratings come from public records</a>.</li>
+<li>A hiring notice appears only when you also publish how dancers are classified, your house fee and your tip-out.</li>
+<li>Prices are for what's on your posted menu: cover, drinks, dances and VIP time.</li>
+<li>We never publish names, stage names, photos or contact details for dancers or staff.</li>
+<li>We edit or remove anything false, explicit, or that suggests anything beyond legal entertainment.</li>
+<li>Want to answer a public record instead? <a href="about.html#corrections">Send a response</a>.</li>
+</ul>
+</section>
+
+{form_html}
+"""
+    return page("claim.html", "Claim your club's listing",
+                "Club owners and managers: add your hours, prices and dancer terms to your listing, free. Your details never change your rating.",
+                body)
 
 
 def readme_section(title):
@@ -774,6 +1080,7 @@ def main():
     (OUT / "data").mkdir(exist_ok=True)
     shutil.copy(ROOT / "data/clubs.csv", OUT / "data/clubs.csv")
     shutil.copy(ROOT / "data/evidence.csv", OUT / "data/evidence.csv")
+    shutil.copy(ROOT / "data/club-info.csv", OUT / "data/club-info.csv")
     (OUT / ".nojekyll").write_text("")
 
     pages = ["index.html", "directory.html", "records.html", "about.html"]
@@ -785,6 +1092,11 @@ def main():
     for out_name, r in ROLES.items():
         write(out_name, role_page(out_name, r))
         pages.append(out_name)
+    for c in CLUBS:
+        write(club_page_name(c["id"]), club_page(c))
+        pages.append(club_page_name(c["id"]))
+    write("claim.html", claim_page())
+    pages.append("claim.html")
 
     write("index.html", home_page())
     write("directory.html", directory_page())

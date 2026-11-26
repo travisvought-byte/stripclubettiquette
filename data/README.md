@@ -1,6 +1,6 @@
 # Data files
 
-Two CSV files: UTF-8, comma-separated, with double quotes around any field that contains a comma.
+Three CSV files: UTF-8, comma-separated, with double quotes around any field that contains a comma.
 
 ## clubs.csv
 
@@ -53,3 +53,26 @@ Record types:
 | `incident` | A violent incident on the premises reported by police or news, with no finding against the club |
 | `closure` | The club closed |
 | `positive` | A published policy, completed training, or standard met |
+
+## club-info.csv
+
+Details a club gives us itself: one row per club, only for clubs that have sent details or post them on their own site. The website shows them under "What the club says," with the date, beside our own record. They never change a rating. See [METHODOLOGY.md](../METHODOLOGY.md#8-club-supplied-details).
+
+| Field | Meaning |
+|---|---|
+| `id` | Matches `id` in `clubs.csv` |
+| `claimed` | `yes` if the club sent the details and we confirmed who sent them; `no` if we copied them from the club's own website |
+| `verified_by` | How we confirmed the sender speaks for the club, such as a call to the club's listed number. Required when `claimed` is `yes`. |
+| `source_url` | The club's own page the details came from. Required when `claimed` is `no`. |
+| `updated` | Date the details were sent or checked (YYYY-MM-DD). Older than 180 days shows as possibly out of date. |
+| `hours`, `cover`, `dress_code`, `alcohol`, `payment` | Short text, in the club's words |
+| `min_age` | `18`, `21`, or blank |
+| `card_fee` | Surcharge on cards or club currency |
+| `private_dance`, `vip` | Posted prices |
+| `worker_status` | `employee`, `contractor`, `both`, or blank |
+| `house_fee`, `tip_out` | What dancers pay per shift, in the club's words. "None" is an answer. |
+| `hiring` | `yes`, `no`, or blank |
+| `apply_url` | The club's own page for applying (https only) |
+| `security_private_rooms`, `trafficking_training`, `hotline_posted` | `yes`, `no`, or blank |
+
+A hiring notice (`hiring` or `apply_url`) is only allowed when `worker_status`, `house_fee` and `tip_out` are all filled in. The build stops if a row breaks a rule.

@@ -50,4 +50,27 @@
     form.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(run, 250); });
     form.addEventListener("submit", function (ev) { ev.preventDefault(); run(); });
   }
+  // Claim form: pick the club named in the address (?club=OH-0001), and, when
+  // claims go by email, open the visitor's email app with the details filled in.
+  var claim = document.getElementById("claim");
+  if (claim) {
+    var m = /[?&]club=([A-Z]{2}-\d{4})/.exec(window.location.search);
+    if (m && claim.elements.club) { claim.elements.club.value = m[1]; }
+    var to = claim.getAttribute("data-mailto");
+    if (to) {
+      claim.addEventListener("submit", function (ev) {
+        if (!claim.checkValidity()) { return; }
+        ev.preventDefault();
+        var lines = [];
+        Array.prototype.forEach.call(claim.elements, function (el) {
+          if (!el.name || !el.value) { return; }
+          var label = claim.querySelector('label[for="' + el.id + '"]');
+          var text = el.tagName === "SELECT" ? el.options[el.selectedIndex].text : el.value;
+          lines.push((label ? label.textContent : el.name) + ": " + text);
+        });
+        window.location.href = "mailto:" + to + "?subject=" + encodeURIComponent("Club listing claim") +
+          "&body=" + encodeURIComponent(lines.join("\n"));
+      });
+    }
+  }
 })();
