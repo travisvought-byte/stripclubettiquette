@@ -65,6 +65,7 @@ Give dancers a way to report problems that doesn't run through the person they'r
 ## How this directory rates you, and how to improve your listing
 
 - Ratings come from public records: court cases, permit actions, criminal cases, and your own published policies. See [METHODOLOGY.md](../METHODOLOGY.md).
+- **Claim your listing, free:** add your hours, prices and dancer terms on the website's claim page. They appear as your own words, with the date, and never change your rating.
 - **Correct your listing:** send updates with a source.
 - **Respond to a record:** submit a short written response, and we'll link it next to the record.
 - **Show your work:** publish your fee schedule, training records and safety measures. Positive records are logged and displayed.
