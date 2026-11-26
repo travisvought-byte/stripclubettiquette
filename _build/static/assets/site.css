@@ -97,6 +97,9 @@ li { margin: 0.2rem 0; }
 .tile .pic { grid-row: span 2; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%; background: var(--panel); color: var(--link); }
 .tile .pic .ic { width: 1.5rem; height: 1.5rem; }
 .tl { font-weight: 700; color: var(--brand); }
+.doors { grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr)); }
+.doors .tile { padding: 1.25rem; }
+.doors .tl { font-size: 1.15rem; }
 .th { font-size: 0.9rem; color: var(--ink-2); }
 .actions { list-style: none; padding: 0; }
 .actions a { display: inline-flex; align-items: center; gap: 0.5rem; min-height: 44px; }
@@ -150,3 +153,5 @@ footer.site { max-width: 72rem; margin: 0 auto; padding: 1.5rem 1rem 2.5rem; bor
 
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; animation: none !important; } }
 @media print { .helpbar, .navtoggle, #site-nav, .filters { display: none !important; } a { color: inherit; } }
+.callout h2 { margin: 0 0 0.4rem; font-size: 1.15rem; }
+.callout p + p { margin-top: 0.5rem; }

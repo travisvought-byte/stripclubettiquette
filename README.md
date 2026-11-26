@@ -54,6 +54,7 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 
 The guides and data are published as a static website. The Markdown and CSV files are the source; the site is generated from them.
 
+- Start pages: the home page opens with four doors, one for each kind of visitor: visiting a club (`visit.html`), dancing or working in one (`work.html`), running one (`clubs.html`), and looking into the industry (`learn.html`). Each one groups the guide sections that role needs, a list of questions to ask a club, and the help lines. They're defined in `ROLES` in `_build/build.py`.
 - Build: `pip install -r _build/requirements.txt`, then `python3 _build/build.py`. The site lands in `_site/`.
 - Check: `python3 _build/check.py` fails on broken links, missing anchors, missing labels, heading jumps or low color contrast. GitHub Actions runs the build and the check on every pull request and every push to `main`.
 - Accessibility: built to WCAG 2.1 AA. Every page has a skip link, a help bar with the hotline (call and text) and a quick exit button, labeled landmarks, scrollable tables with headers, icons paired with words, light and dark mode, and works without JavaScript.
