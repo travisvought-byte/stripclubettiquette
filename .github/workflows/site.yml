@@ -1,9 +1,8 @@
 name: Website
 
-# Builds the site from the Markdown guides and CSV data, then checks links and
-# accessibility. Publishing is off until the repository variable PAGES_ENABLED
-# is set to "true" (Settings > Secrets and variables > Actions > Variables)
-# and Pages is set to deploy from GitHub Actions.
+# Builds the site from the Markdown guides and CSV data, checks links and
+# accessibility, and publishes every push to main to GitHub Pages at
+# stripclubguide.org. Pull requests are built and checked but not published.
 
 on:
   push:
@@ -35,7 +34,7 @@ jobs:
           path: _site
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_ENABLED == 'true'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
     needs: build
     runs-on: ubuntu-latest
     permissions:

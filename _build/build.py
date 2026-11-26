@@ -40,7 +40,7 @@ REPO_URL = "https://github.com/travisvought-byte/stripclubettiquette"
 # Where club claims go. Set one: CLAIM_FORM_URL is a form service's address that
 # takes a POST; CLAIM_EMAIL opens the visitor's email app with the claim filled
 # in. With neither set, the claim page lists what we'll ask for and says claims
-# open at launch. Never use a Veteran Home Guardians address.
+# open at launch. Use an address on stripclubguide.org.
 CLAIM_FORM_URL = ""
 CLAIM_EMAIL = ""
 # Club-supplied details older than this many days are marked as possibly out of date.
@@ -884,7 +884,7 @@ def claim_page():
                        for _t, _i, fields in CLUB_INFO_GROUPS for _f, label in fields)
         form_html = f"""<section aria-labelledby="form-h" class="panel">
 <h2 id="form-h">What we'll ask for</h2>
-<p>Claims open when the site launches. Every field is optional except who you are and how to reach you.</p>
+<p>The claim form opens soon. Every field is optional except who you are and how to reach you.</p>
 <ul class="checklist">{asks}</ul>
 </section>"""
     steps = [
