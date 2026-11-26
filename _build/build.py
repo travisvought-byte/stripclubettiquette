@@ -31,9 +31,9 @@ SITE_NAME = "Strip Club Etiquette"
 # Full address of the live site with no trailing slash. It turns on canonical
 # links, the sitemap and the CNAME file. Leave empty to build with none of them.
 SITE_URL = "https://stripclubguide.org"
-# GoatCounter site code, such as "stripclubetiquette" for
-# stripclubetiquette.goatcounter.com. Leave empty to build with no counter.
-GOATCOUNTER = ""
+# GoatCounter site code: "stripclubguide" counts at stripclubguide.goatcounter.com.
+# Leave empty to build with no counter.
+GOATCOUNTER = "stripclubguide"
 # Where corrections go. The issues page works once the repository is public.
 CONTACT_EMAIL = ""
 REPO_URL = "https://github.com/travisvought-byte/stripclubettiquette"
