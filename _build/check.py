@@ -40,6 +40,10 @@ CONTRAST_PAIRS = {
     "dark badge muted": ("#d4d1e0", "#2a2738"),
     "dark badge warn": ("#ffd58a", "#3d2a05"),
     "dark badge bad": ("#ffb4ae", "#431514"),
+    "light record type bad": ("#8c1d18", "#ffffff"),
+    "light record type warn": ("#6e4300", "#ffffff"),
+    "dark record type bad": ("#ffb4ae", "#14121c"),
+    "dark record type warn": ("#ffd58a", "#14121c"),
 }
 
 

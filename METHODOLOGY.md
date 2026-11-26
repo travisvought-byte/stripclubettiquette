@@ -98,6 +98,18 @@ Dancers can report what a club charges them, anonymously. These rules keep repor
 - **Reviewed first:** we read every report before it goes into [data/dancer-reports.csv](data/dancer-reports.csv), and set aside spam, outliers we can't explain, and bursts that look like a pile-on.
 - **Kept apart from ratings:** dancer numbers appear under "What dancers report," never change a club's rating, and never stand in for a public record. Reports of abuse, harassment or trafficking aren't published from the form. They're leads to research, and the person reporting is pointed to the help lines.
 
+## 10. The stay-away list
+
+The [stay-away list](data/stay-away.csv) names strip clubs, hostess bars and cantinas tied to trafficking, forced labor, prostitution run or allowed by the business, or a minor exploited there. Each place is listed only on a primary record: a court record, a conviction or guilty plea, a closure or nuisance order, a license action, or a government release. News stories, reviews, social media and anonymous tips never list a place on their own; they are leads until a primary record turns up.
+
+- **Stay away** needs at least one conviction or guilty plea tied to the place, a court closure or nuisance order, or a license revoked or given up, on those grounds.
+- **Use caution** is for a charge, a license suspension or a temporary order on the same grounds, or a conviction on other counts where the record describes sex for money at the place. Charged is not convicted, and a charge may end with no finding.
+- **Reopened or kept operating** needs a record that shows the same address. A similar name somewhere else isn't enough.
+- Every record carries its date, its type and a link to its source. Convictions and charges are labeled apart. Agreed orders say there was no admission when the order says so.
+- Records older than 5 years are marked as history. A place listed for an old case may be under new owners; each entry says what the record shows about that.
+- Places and companies only. Never dancers, other workers or customers, and no individual owners by name.
+- A listed place or its new owner can [respond or send a correction](#corrections-and-responses), and we'll add the response or a newer record.
+
 ## Corrections and responses
 
 Any club, dancer or member of the public can request a correction. Send the club, what's wrong, and a source. A club can also submit a short written response to any record, and we'll link it next to that record.
