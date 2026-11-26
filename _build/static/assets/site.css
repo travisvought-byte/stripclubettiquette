@@ -171,3 +171,13 @@ h3 .ic { vertical-align: -0.2em; color: var(--link); }
 @media print { .helpbar, .navtoggle, #site-nav, .filters { display: none !important; } a { color: inherit; } }
 .callout h2 { margin: 0 0 0.4rem; font-size: 1.15rem; }
 .callout p + p { margin-top: 0.5rem; }
+
+/* State lists, record groups, form hints */
+.statelist { columns: 13rem; column-gap: 1.5rem; list-style: none; padding: 0; margin: 0.75rem 0 1.25rem; }
+.statelist li { break-inside: avoid; margin: 0; padding: 0.2rem 0; }
+.statelist a { display: inline-block; min-height: 24px; font-weight: 600; }
+.n { font-size: 0.85rem; color: var(--ink-2); }
+[hidden] { display: none !important; }
+h2 .ic { vertical-align: -0.2em; color: var(--link); }
+.plain { margin: 0.25rem 0 0.5rem; }
+.hint { font-size: 0.9rem; color: var(--ink-2); }

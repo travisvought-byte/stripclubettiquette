@@ -45,6 +45,14 @@ CLAIM_FORM_URL = ""
 CLAIM_EMAIL = "veteranhomeguardians@gmail.com"
 # Club-supplied details older than this many days are marked as possibly out of date.
 CLUB_INFO_STALE_DAYS = 180
+# Where dancers send anonymous pay reports: the address of a form service set up to
+# store no names, emails or IP addresses. Leave empty and the dancer pay page lists
+# what the form will ask and says reports open soon.
+DANCER_FORM_URL = ""
+# A club's dancer-reported numbers show only once at least this many separate
+# reports from the last DANCER_REPORT_MONTHS months are in data/dancer-reports.csv.
+DANCER_REPORT_MIN = 3
+DANCER_REPORT_MONTHS = 12
 
 # ---------------------------------------------------------------------------
 # Pages made from Markdown files: source -> (output, short label, icon)
@@ -56,6 +64,7 @@ MD_PAGES = OrderedDict([
     ("guides/for-club-operators.md", ("operators.html", "For clubs", "building")),
     ("guides/how-strip-clubs-work.md", ("how-clubs-work.html", "How clubs work", "dollar")),
     ("guides/laws-by-state.md", ("laws.html", "Laws by state", "scale")),
+    ("guides/whats-working.md", ("whats-working.html", "What's working", "check-circle")),
     ("standards/club-safety-standard.md", ("standard.html", "Safety standard", "checkbox")),
     ("METHODOLOGY.md", ("method.html", "How we rate", "search")),
     ("data/README.md", ("data.html", "Data files", "file")),
@@ -69,11 +78,13 @@ LINK_MAP = {
     "data/clubs.csv": "directory.html",
     "data/evidence.csv": "records.html",
     "data/club-info.csv": "claim.html",
+    "data/house-fees.csv": "dancer-pay.html",
+    "data/dancer-reports.csv": "dancer-pay.html#dancer-reports",
 }
 
 # Titles for pages, used when a link's text is a bare file name such as "laws-by-state.md".
 PAGE_TITLES = {"index.html": "the home page", "directory.html": "the club directory",
-               "records.html": "the public records"}
+               "records.html": "the public records", "dancer-pay.html": "dancer pay and house fees"}
 for _src, (_out, _label, _icon) in MD_PAGES.items():
     _m = re.search(r"^# (.+)$", (ROOT / _src).read_text(encoding="utf-8"), re.M)
     PAGE_TITLES[_out] = _m.group(1).strip() if _m else _label
@@ -150,6 +161,8 @@ ROLES = OrderedDict([
                 ("dancers.html#contractor-or-employee", "scale", "Contractor or employee?", "What decides it, and why it matters"),
                 ("dancers.html#your-tips-are-yours", "dollar", "Your tips are yours", "What a club can and can't take"),
                 ("dancers.html#house-fees-tip-outs-and-fines", "file", "House fees and fines", "What's legal and what isn't"),
+                ("dancer-pay.html", "dollar", "House fees by state", "What clubs have charged, from court records, laws and the news"),
+                ("dancer-pay.html#dancer-reports", "list", "Report your club's fees", "Anonymous, numbers only, no names"),
                 ("dancers.html#keep-a-record", "list", "Keep a record", "What to write down and where to keep it"),
                 ("dancers.html#how-to-file-a-wage-complaint", "checkbox", "File a wage complaint", "Where to file and the deadlines"),
             ]),
@@ -185,9 +198,10 @@ ROLES = OrderedDict([
                 ("operators.html#why-this-matters-to-your-bottom-line", "dollar", "Why it pays", "What wage suits and bad nights cost a club"),
                 ("operators.html#the-playbook", "list", "The playbook", "Nine practices that cut risk"),
                 ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
+                ("whats-working.html", "check-circle", "What's working", "Fee rules, safety steps and business models with a record"),
             ]),
             ("Your listing", [
-                ("claim.html", "checkbox", "Claim your listing", "Add your hours, prices and dancer terms, free"),
+                ("claim.html", "checkbox", "Claim your listing", "Add your hours, prices, dancer terms and booking line, free"),
                 ("directory.html", "map", "See your listing", "Status, records and sources"),
                 ("method.html", "search", "How we rate clubs", "Records, not rumor"),
                 ("about.html#corrections", "file", "Correct or respond", "Fix a listing or answer a record"),
@@ -217,6 +231,8 @@ ROLES = OrderedDict([
                 ("how-clubs-work.html#the-contractor-vs-employee-fight", "scale", "The contractor fight", "Why clubs keep ending up in court"),
                 ("laws.html", "scale", "Laws by state", "What each state allows and requires"),
                 ("laws.html#the-age-21-debate", "person", "The age-21 debate", "Laws raising the minimum age to dance"),
+                ("whats-working.html", "check-circle", "What's working", "What the record shows helps dancers and clubs"),
+                ("dancer-pay.html", "file", "House fees by state", "What clubs have charged dancers, with sources"),
             ]),
             ("Trafficking", [
                 ("trafficking.html#what-trafficking-is", "shield", "What trafficking is", "The legal definition, in plain English"),
@@ -226,7 +242,8 @@ ROLES = OrderedDict([
             ]),
             ("The record", [
                 ("directory.html", "map", "Club directory", "Clubs with status and sources"),
-                ("records.html", "file", "Public records", "Lawsuits, settlements, permit actions and convictions"),
+                ("directory.html#by-state", "map", "Clubs by state", "One page for each state"),
+                ("records.html", "file", "Public records", "Convictions, findings, settlements and lawsuits"),
                 ("method.html", "search", "How we rate", "The rating method"),
                 ("data.html", "list", "Data files", "Download the data"),
                 ("coverage.html", "map", "Coverage plan", "Where the build goes next"),
@@ -292,7 +309,7 @@ STATE_NAMES = {
     "NC": "North Carolina", "ND": "North Dakota", "OH": "Ohio", "OK": "Oklahoma", "OR": "Oregon",
     "PA": "Pennsylvania", "PR": "Puerto Rico", "RI": "Rhode Island", "SC": "South Carolina",
     "SD": "South Dakota", "TN": "Tennessee", "TX": "Texas", "UT": "Utah", "VT": "Vermont",
-    "VA": "Virginia", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
+    "VA": "Virginia", "VI": "U.S. Virgin Islands", "WA": "Washington", "WV": "West Virginia", "WI": "Wisconsin", "WY": "Wyoming",
 }
 
 e = html.escape
@@ -335,6 +352,7 @@ CLUB_INFO_GROUPS = [
     ("Dancers", "heart", [
         ("worker_status", "Dancers work as"), ("house_fee", "House fee"), ("tip_out", "Tip-out"),
         ("hiring", "Hiring now"), ("apply_url", "How to apply"),
+        ("booking_line", "Booking line"), ("audition_hours", "Auditions"),
     ]),
     ("Safety", "shield", [
         ("security_private_rooms", "Security in private rooms"),
@@ -346,6 +364,11 @@ YES_NO_FIELDS = {"hiring", "security_private_rooms", "trafficking_training", "ho
 WORKER_STATUS = {"employee": "Employees", "contractor": "Independent contractors",
                  "both": "Some employees, some contractors"}
 TERMS_FIELDS = ("worker_status", "house_fee", "tip_out")
+# How dancers get on the schedule. Shown only from a club we've confirmed (claimed = yes)
+# that also publishes its dancer terms, and never taken from a dancer report.
+CLUB_ONLY_FIELDS = ("booking_line", "audition_hours")
+# Fields that count as a hiring notice: allowed only with the dancer terms published.
+HIRING_FIELDS = ("hiring", "apply_url", "booking_line", "audition_hours")
 
 CLUB_INFO = read_csv("data/club-info.csv")
 INFO_BY_CLUB = {}
@@ -380,14 +403,97 @@ def check_club_info():
                 errs.append(f"{where}: {f} must be yes, no or blank")
         if row["apply_url"] and not row["apply_url"].startswith("https://"):
             errs.append(f"{where}: apply_url must start with https://")
-        if (row["hiring"] == "yes" or row["apply_url"]) and not all(row[f].strip() for f in TERMS_FIELDS):
-            errs.append(f"{where}: a hiring notice needs worker_status, house_fee and tip_out published")
+        if row["booking_line"] and not re.fullmatch(r"\(?\d{3}\)?[ .-]?\d{3}[ .-]?\d{4}", row["booking_line"].strip()):
+            errs.append(f"{where}: booking_line must be a 10-digit U.S. phone number, such as 614-555-0100")
+        if row["claimed"] != "yes" and any(row[f].strip() for f in CLUB_ONLY_FIELDS):
+            errs.append(f"{where}: booking_line and audition_hours come only from a club we've confirmed (claimed = yes)")
+        if (row["hiring"] == "yes" or any(row[f].strip() for f in HIRING_FIELDS[1:])) and \
+                not all(row[f].strip() for f in TERMS_FIELDS):
+            errs.append(f"{where}: a hiring notice, booking line or audition hours need worker_status, "
+                        "house_fee and tip_out published")
         INFO_BY_CLUB[cid] = row
     if errs:
         raise SystemExit("Club info problems:\n" + "\n".join(errs))
 
 
 check_club_info()
+
+# Anonymous dancer pay reports: numbers and dates only, no names and no free text.
+# See METHODOLOGY.md section 9. Nothing for a club is shown until it has
+# DANCER_REPORT_MIN separate reports from the last DANCER_REPORT_MONTHS months.
+DANCER_REPORTS = read_csv("data/dancer-reports.csv")
+SHIFTS = OrderedDict([("weekday-day", "Weekday day"), ("weekday-night", "Weekday night"),
+                      ("weekend-day", "Weekend day"), ("weekend-night", "Weekend night")])
+REPORT_NUMBERS = [
+    ("house_fee", "House fee for the shift"),
+    ("tip_out", "Tips to staff for the shift (DJ, house mom, security and others)"),
+    ("dance_price", "Price of one private dance"),
+    ("dancer_share", "What the dancer kept from one private dance"),
+]
+REPORTS_BY_CLUB = {}
+
+
+def check_dancer_reports():
+    errs, ids = [], set()
+    for n, row in enumerate(DANCER_REPORTS, 2):
+        where = f"data/dancer-reports.csv line {n}"
+        if row["report_id"] in ids or not re.fullmatch(r"R-\d{4,}", row["report_id"]):
+            errs.append(f"{where}: report_id must be unique, like R-0001")
+        ids.add(row["report_id"])
+        if row["club_id"] not in CLUB_BY_ID:
+            errs.append(f"{where}: club_id {row['club_id']!r} isn't in clubs.csv")
+        if not re.fullmatch(r"\d{4}-(0[1-9]|1[0-2])", row["month"]):
+            errs.append(f"{where}: month must be YYYY-MM")
+        if row["shift"] not in ("", *SHIFTS):
+            errs.append(f"{where}: shift must be one of {', '.join(SHIFTS)} or blank")
+        for f, _label in REPORT_NUMBERS:
+            if row[f] and not re.fullmatch(r"\d{1,5}", row[f]):
+                errs.append(f"{where}: {f} must be whole dollars or blank")
+        if row["fines"] not in ("", "yes", "no"):
+            errs.append(f"{where}: fines must be yes, no or blank")
+        try:
+            date.fromisoformat(row["added"])
+        except ValueError:
+            errs.append(f"{where}: added must be a real date, YYYY-MM-DD")
+        REPORTS_BY_CLUB.setdefault(row["club_id"], []).append(row)
+    if errs:
+        raise SystemExit("Dancer report problems:\n" + "\n".join(errs))
+
+
+check_dancer_reports()
+
+
+def report_cutoff():
+    """The first month that still counts: DANCER_REPORT_MONTHS back from this month."""
+    t = date.today()
+    m = t.year * 12 + (t.month - 1) - (DANCER_REPORT_MONTHS - 1)
+    return f"{m // 12:04d}-{m % 12 + 1:02d}"
+
+
+def month_name(ym):
+    y, m = ym.split("-")
+    return f"{date(int(y), int(m), 1):%b} {y}"
+
+
+def dancer_summary(club_id):
+    """Ranges from recent reports, or None when there aren't enough to show anything."""
+    recent = [r for r in REPORTS_BY_CLUB.get(club_id, []) if r["month"] >= report_cutoff()]
+    if len(recent) < DANCER_REPORT_MIN:
+        return None
+    lines = []
+    for f, label in REPORT_NUMBERS:
+        vals = sorted(int(r[f]) for r in recent if r[f])
+        if len(vals) < DANCER_REPORT_MIN:
+            continue
+        half = len(vals) // 2
+        mid = vals[half] if len(vals) % 2 else (vals[half - 1] + vals[half]) / 2
+        lines.append((label, f"${vals[0]:,} to ${vals[-1]:,}, middle ${mid:,.0f} ({len(vals)} reports)"))
+    fines = [r["fines"] for r in recent if r["fines"]]
+    if len(fines) >= DANCER_REPORT_MIN:
+        lines.append(("Fines charged", f"{fines.count('yes')} of {len(fines)} reports"))
+    months = sorted(r["month"] for r in recent)
+    return {"count": len(recent), "span": f"{month_name(months[0])} to {month_name(months[-1])}",
+            "lines": lines}
 
 
 def club_page_name(club_id):
@@ -585,6 +691,33 @@ def states_in_data():
     return sorted({c["state"] for c in CLUBS}, key=lambda s: STATE_NAMES.get(s, s))
 
 
+def state_page_name(st):
+    return f"state-{st.lower()}.html"
+
+
+def state_links():
+    counts = Counter(c["state"] for c in CLUBS)
+    return '<ul class="statelist">' + "".join(
+        f'<li><a href="{state_page_name(s)}">{e(STATE_NAMES.get(s, s))}</a> '
+        f'<span class="n">{plural(counts[s], "club")}</span></li>' for s in states_in_data()) + "</ul>"
+
+
+_LAW_ANCHORS = {}
+
+
+def law_anchor(st):
+    """The state's section of the laws guide, if it has one."""
+    if not _LAW_ANCHORS:
+        _t, _d, body = render_md("guides/laws-by-state.md")
+        for hid, text in re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', body):
+            text = re.sub(r"<[^>]+>", "", text)
+            for code, name in STATE_NAMES.items():
+                if text == name or text.startswith(name + " "):
+                    _LAW_ANCHORS[code] = hid
+        _LAW_ANCHORS.setdefault("", "")
+    return _LAW_ANCHORS.get(st)
+
+
 def source_links(sources):
     links = []
     for i, url in enumerate([s.strip() for s in sources.split("|") if s.strip()], 1):
@@ -611,7 +744,7 @@ def directory_page():
         s_label, s_icon, s_tone = STATUS.get(c["status"], (c["status"], "question", "muted"))
         f_label, f_icon, f_tone = FLAG.get(c["overall_flag"], (c["overall_flag"], "question", "muted"))
         n = len(RECORDS_BY_CLUB.get(c["id"], []))
-        recs = (f'<a href="records.html#{e(c["id"])}">{n} record{"s" if n != 1 else ""}'
+        recs = (f'<a href="{club_page_name(c["id"])}#record">{plural(n, "record")}'
                 f'<span class="sr"> for {e(c["name"])}</span></a>') if n else "None yet"
         operator = f'<span class="sub">Operator: {e(c["operator"])}</span>' if c["operator"] else ""
         address = f'<span class="sub">{e(c["address"])}</span>' if c["address"] else ""
@@ -623,7 +756,7 @@ def directory_page():
             f'data-text="{e(search_text)}">'
             f'<th scope="row"><a class="clubname" href="{club_page_name(c["id"])}">{e(c["name"])}</a>'
             f'{info_badges(c["id"])}{address}{operator}{notes}</th>'
-            f'<td>{e(c["city"])}</td><td><abbr title="{e(STATE_NAMES.get(c["state"], c["state"]))}">{e(c["state"])}</abbr></td>'
+            f'<td>{e(c["city"])}</td><td><a href="{state_page_name(c["state"])}"><abbr title="{e(STATE_NAMES.get(c["state"], c["state"]))}">{e(c["state"])}</abbr></a></td>'
             f'<td>{badge(s_label, s_icon, s_tone)}</td><td>{badge(f_label, f_icon, f_tone)}</td>'
             f'<td>{recs}</td><td class="srcs">{source_links(c["sources"])}</td></tr>')
     state_opts = "".join(f'<option value="{s}">{e(STATE_NAMES.get(s, s))}</option>' for s in states_in_data())
@@ -645,8 +778,13 @@ def directory_page():
         ]))
     body = f"""
 <h1>Club directory</h1>
-<p class="lead">{len(CLUBS)} clubs in {len(states_in_data())} states so far, built state by state from public records. Ohio is first. Every listing links to its source.</p>
+<p class="lead">{len(CLUBS)} clubs in {len(states_in_data())} states and territories so far, built from public records. Every listing links to its source.</p>
 <div class="callout">{icon("info")}<p>A listing is not an endorsement, and "not reviewed" means we haven't finished checking, not that a club is safe or unsafe. See <a href="method.html">how we rate clubs</a>. Something wrong? <a href="about.html#corrections">Send a correction</a>.</p></div>
+
+<h2 id="by-state">Browse by state</h2>
+{state_links()}
+
+<h2 id="all-clubs">All clubs</h2>
 
 <form id="filters" class="filters" hidden role="search" aria-label="Filter the directory">
   <div><label for="f-state">State</label><select id="f-state" name="state"><option value="">All states</option>{state_opts}</select></div>
@@ -669,49 +807,88 @@ def directory_page():
 <ul class="legend">{status_legend}</ul>
 <h2 id="rating-key">What the rating means</h2>
 <ul class="legend">{flag_legend}</ul>
-<p>Download the data: <a href="data/clubs.csv" download>clubs.csv</a>, <a href="data/evidence.csv" download>evidence.csv</a> and <a href="data/club-info.csv" download>club-info.csv</a>. Field definitions are on the <a href="data.html">data page</a>.</p>
+<p>Download the data: <a href="data/clubs.csv" download>clubs.csv</a>, <a href="data/evidence.csv" download>evidence.csv</a>, <a href="data/club-info.csv" download>club-info.csv</a>, <a href="data/house-fees.csv" download>house-fees.csv</a> and <a href="data/dancer-reports.csv" download>dancer-reports.csv</a>. Field definitions are on the <a href="data.html">data page</a>.</p>
 """
     return page("directory.html", "Club directory",
                 f"A sourced directory of {len(CLUBS)} U.S. strip clubs, with status and public records for each.", body,
                 wide=True)
 
 
+RECORD_GROUPS = [
+    ("conviction", "Convictions", "octagon",
+     "The most serious record. A criminal court found guilt or passed sentence."),
+    ("finding", "Court and agency findings", "scale",
+     "A ruling on the facts. A court judgment, an agency fine, or a permit revoked or denied."),
+    ("government-action", "Government and license actions", "building",
+     "Not a final ruling. An agency objected, cited, raided or investigated."),
+    ("settlement", "Settlements", "file",
+     "A settlement isn't an admission. The case ended with a payment, and nobody was found liable unless the record says so."),
+    ("allegation", "Lawsuits and charges", "alert",
+     "Charged is not convicted. A lawsuit is a claim, not a finding."),
+    ("incident", "Incidents", "info",
+     "No finding against the club. Police or news reported it."),
+    ("closure", "Closures", "x-circle", "Closed. A source reports the club closed."),
+    ("positive", "Good practices on record", "check-circle",
+     "Something done right. A published policy, completed training or a standard met."),
+]
+
+
+def plural(n, word, words=None):
+    return f"{n:,} {word if n == 1 else (words or word + 's')}"
+
+
 def records_page():
-    sections = []
-    for club_id, recs in sorted(RECORDS_BY_CLUB.items(),
-                                key=lambda kv: (CLUB_BY_ID.get(kv[0], {}).get("state", ""),
-                                                CLUB_BY_ID.get(kv[0], {}).get("city", ""),
-                                                CLUB_BY_ID.get(kv[0], {}).get("name", kv[0]))):
-        club = CLUB_BY_ID.get(club_id, {"name": club_id, "city": "", "state": ""})
+    groups = [g for g in RECORD_GROUPS if any(r["type"] == g[0] for r in EVIDENCE)]
+    known = {g[0] for g in RECORD_GROUPS}
+    other = [r for r in EVIDENCE if r["type"] not in known]
+    if other:
+        raise SystemExit(f"records page: no group for record type {other[0]['type']!r}")
+    sections, toc = [], []
+    for rtype, title, ic, plain in groups:
+        recs = sorted((r for r in EVIDENCE if r["type"] == rtype), key=lambda r: r["date"] or "0", reverse=True)
         rows = []
-        for r in sorted(recs, key=lambda r: r["date"] or "0", reverse=True):
+        for r in recs:
+            club = CLUB_BY_ID[r["club_id"]]
             src = (f'<a href="{e(r["source_url"])}">{e(SOURCE_TYPE.get(r["source_type"], r["source_type"]))}'
-                   f'<span class="sr"> source for {e(r["evidence_id"])}</span></a>')
+                   f'<span class="sr"> source for this record about {e(club["name"])}</span></a>')
             checked = "Yes" if r["primary_confirmed"] == "yes" else "Not yet"
+            where = ", ".join(x for x in [club["city"], club["state"]] if x)
             rows.append(
-                f'<tr><td>{e(r["date"] or "Date to confirm")}</td>'
+                f'<tr data-state="{e(club["state"])}">'
+                f'<th scope="row"><a class="clubname" href="{club_page_name(club["id"])}">{e(club["name"])}</a>'
+                f'<span class="sub">{e(where)}</span></th>'
+                f'<td>{e(r["date"] or "Date to confirm")}</td>'
                 f'<td>{e(DIMENSION.get(r["dimension"], r["dimension"]))}</td>'
-                f'<td><span class="rtype {e(r["type"])}">{e(RECORD_TYPE.get(r["type"], r["type"]))}</span></td>'
                 f'<td>{e(r["summary"])}</td><td>{src}</td><td>{checked}</td></tr>')
-        where = ", ".join(x for x in [club.get("city", ""), club.get("state", "")] if x)
+        gid = f"g-{rtype}"
+        toc.append(f'<li><a href="#{gid}">{e(title)}</a> <span class="n">{plural(len(recs), "record")}</span></li>')
+        first, _, rest = plain.partition(". ")
         sections.append(f"""
-<section aria-labelledby="{e(club_id)}">
-<h2 id="{e(club_id)}">{e(club["name"])} <span class="where">{e(where)}</span></h2>
-<div class="tablewrap" role="region" tabindex="0" aria-label="Records for {e(club["name"])}">
-<table class="records"><thead><tr><th scope="col">Date</th><th scope="col">Area</th><th scope="col">Type</th><th scope="col">What the record says</th><th scope="col">Source</th><th scope="col">Checked against the primary record</th></tr></thead>
+<section aria-labelledby="{gid}" data-group>
+<h2 id="{gid}">{icon(ic)} {e(title)} <span class="where" data-count>{plural(len(recs), "record")}</span></h2>
+<p class="plain"><b>{e(first.rstrip(".") + ".")}</b> {e(rest)}</p>
+<div class="tablewrap" role="region" tabindex="0" aria-label="{e(title)}">
+<table class="records"><thead><tr><th scope="col">Club</th><th scope="col">Date</th><th scope="col">Area</th><th scope="col">What the record says</th><th scope="col">Source</th><th scope="col">Checked against the primary record</th></tr></thead>
 <tbody>{"".join(rows)}</tbody></table></div>
-<p class="back"><a href="{club_page_name(club_id)}">More about {e(club["name"])}</a></p>
 </section>""")
-    types = Counter(r["type"] for r in EVIDENCE)
-    type_list = ", ".join(f"{n} {RECORD_TYPE.get(t, t).lower()}{'s' if n != 1 else ''}" for t, n in types.most_common())
+    rec_states = sorted({CLUB_BY_ID[r["club_id"]]["state"] for r in EVIDENCE}, key=lambda s: STATE_NAMES.get(s, s))
+    opts = "".join(f'<option value="{s}">{e(STATE_NAMES.get(s, s))}</option>' for s in rec_states)
     body = f"""
 <h1>Public records</h1>
-<p class="lead">{len(EVIDENCE)} records for {len(RECORDS_BY_CLUB)} clubs: {e(type_list)}. Each one links to its source.</p>
-<div class="callout">{icon("scale")}<p>A lawsuit or a charge is an allegation, not a finding. A settlement is not an admission unless the record says so. Records older than 5 years are history and don't set a rating. Clubs can <a href="about.html#corrections">respond to any record</a>.</p></div>
+<p class="lead">{len(EVIDENCE)} records tied to {len(RECORDS_BY_CLUB)} clubs, the most serious first: convictions, then findings, then government and license actions, then settlements, then lawsuits and charges. Each one links to its source.</p>
+<div class="callout">{icon("scale")}<p>Charged is not convicted. A lawsuit is a claim, not a finding. A settlement isn't an admission unless the record says so. Records name clubs and companies, never dancers, staff or customers. Records older than 5 years are history and don't set a rating. Clubs can <a href="about.html#corrections">respond to any record</a>.</p></div>
+
+<nav aria-labelledby="toc-h" class="panel"><h2 id="toc-h">On this page</h2><ul>{"".join(toc)}</ul></nav>
+
+<form id="recfilter" class="filters" hidden role="search" aria-label="Filter the records">
+  <div><label for="r-state">State</label><select id="r-state" name="state"><option value="">All states</option>{opts}</select></div>
+</form>
+<p id="rshown" role="status" class="shown">Showing all {len(EVIDENCE)} records.</p>
 {"".join(sections)}
+<p>Download the records: <a href="data/evidence.csv" download>evidence.csv</a>. Field definitions are on the <a href="data.html">data page</a>.</p>
 """
     return page("records.html", "Public records",
-                f"{len(EVIDENCE)} sourced public records (lawsuits, settlements, permit actions and convictions) tied to specific clubs.",
+                f"{len(EVIDENCE)} sourced public records tied to specific clubs: convictions, findings, government actions, settlements and lawsuits.",
                 body, wide=True)
 
 
@@ -743,6 +920,9 @@ def info_value(field, value):
     if field == "apply_url":
         host = re.sub(r"^www\.", "", re.sub(r"^https?://([^/]+).*$", r"\1", value))
         return f'<a href="{e(value)}">The club\'s application page<span class="sr"> on {e(host)}</span></a>'
+    if field == "booking_line":
+        digits = re.sub(r"\D", "", value)
+        return f'<a href="tel:+1{digits}">{e(value)}</a> <span class="sub">The club\'s own line</span>'
     return e(value)
 
 
@@ -766,9 +946,14 @@ def club_info_section(c):
     groups = []
     for title, ic, fields in CLUB_INFO_GROUPS:
         items = [(label, info_value(f, info[f])) for f, label in fields if info[f].strip()]
-        if title == "Dancers" and not has_terms(info):
-            items = [(label, val) for (label, val) in items
-                     if label not in ("Hiring now", "How to apply")]
+        if title == "Dancers":
+            hide = set()
+            if not has_terms(info):
+                hide |= set(HIRING_FIELDS)
+            if info["claimed"] != "yes":
+                hide |= set(CLUB_ONLY_FIELDS)
+            items = [(label, info_value(f, info[f])) for f, label in fields
+                     if info[f].strip() and f not in hide]
         if not items:
             continue
         dl = "".join(f"<dt>{e(label)}</dt><dd>{val}</dd>" for label, val in items)
@@ -806,7 +991,7 @@ def club_page(c):
     recs = RECORDS_BY_CLUB.get(c["id"], [])
     rec_html = records_table(c, recs) if recs else "<p>No public records tied to this club yet.</p>"
     body = f"""
-<p class="back"><a href="directory.html#{e(c["id"])}">Back to the directory</a></p>
+<p class="back"><a href="directory.html#{e(c["id"])}">Back to the directory</a> <span aria-hidden="true">|</span> <a href="{state_page_name(c["state"])}">More clubs in {e(STATE_NAMES.get(c["state"], c["state"]))}</a></p>
 <h1>{e(c["name"])}</h1>
 <p class="lead">{e(where)}</p>
 
@@ -818,11 +1003,30 @@ def club_page(c):
 <p>A lawsuit or a charge is an allegation, not a finding. See <a href="method.html">how we rate clubs</a>, or <a href="about.html#corrections">send a correction</a>.</p>
 </section>
 
+{dancer_reports_section(c)}
+
 {club_info_section(c)}
 """
     title = f'{c["name"]}, {c["city"]}' if c["city"] else c["name"]
     return page(club_page_name(c["id"]), title,
-                f'{c["name"]} in {where}: listing status, public records, and details from the club itself.', body)
+                f'{c["name"]} in {where}: listing status, public records, what dancers report, and details from the club itself.', body)
+
+
+def dancer_reports_section(c):
+    summary = dancer_summary(c["id"])
+    if summary:
+        dl = "".join(f"<dt>{e(k)}</dt><dd>{e(v)}</dd>" for k, v in summary["lines"])
+        inner = (f'<div class="callout">{icon("info")}<p>From {plural(summary["count"], "anonymous dancer report")}, '
+                 f'{e(summary["span"])}. These are dancers\' numbers, not ours, and they never change the rating. '
+                 f'One dancer\'s report is never shown on its own.</p></div><dl class="facts">{dl}</dl>')
+    else:
+        inner = (f"<p>Not enough reports yet. We show dancers' numbers for a club once {DANCER_REPORT_MIN} dancers "
+                 f"have reported in the last {DANCER_REPORT_MONTHS} months.</p>")
+    return f"""<section aria-labelledby="dancers-say">
+<h2 id="dancers-say">What dancers report</h2>
+{inner}
+<p><a href="dancer-pay.html#dancer-reports">Dance here? Report this club's fees anonymously</a></p>
+</section>"""
 
 
 CLAIM_ASK = [
@@ -836,6 +1040,10 @@ CLAIM_ASK = [
     ("Dancers", [(f, label, "text", False) for f, label in CLUB_INFO_GROUPS[1][2]]),
     ("Safety", [(f, label, "text", False) for f, label in CLUB_INFO_GROUPS[2][2]]),
 ]
+FIELD_HINTS = {
+    "booking_line": "The club's own public number for getting on the schedule. Never anyone's personal phone.",
+    "audition_hours": "Days and times, and the role to ask for, such as \u201cTuesdays 2 to 5 p.m., ask for the day manager.\u201d No names.",
+}
 SELECT_CHOICES = {
     "min_age": [("", "Choose"), ("18", "18 and up"), ("21", "21 and up")],
     "worker_status": [("", "Choose"), ("employee", "Employees"), ("contractor", "Independent contractors"),
@@ -862,9 +1070,13 @@ def claim_form():
                 o = "".join(f'<option value="{v}">{e(t)}</option>' for v, t in SELECT_CHOICES[f])
                 ctl = f'<select id="{f}" name="{f}"{r}>{o}</select>'
             else:
-                t = "url" if f == "apply_url" else typ
+                t = {"apply_url": "url", "booking_line": "tel"}.get(f, typ)
                 ctl = f'<input id="{f}" name="{f}" type="{t}"{r}{ac}>'
-            rows.append(f'<div class="field"><label for="{f}">{e(label)}{" (required)" if req else ""}</label>{ctl}</div>')
+            hint = ""
+            if f in FIELD_HINTS:
+                hint = f'<span class="hint" id="{f}-hint">{e(FIELD_HINTS[f])}</span>'
+                ctl = ctl.replace(f'id="{f}"', f'id="{f}" aria-describedby="{f}-hint"', 1)
+            rows.append(f'<div class="field"><label for="{f}">{e(label)}{" (required)" if req else ""}</label>{hint}{ctl}</div>')
         fieldsets.append(f'<fieldset><legend>{e(legend)}</legend>{"".join(rows)}</fieldset>')
     if CLAIM_FORM_URL:
         attrs = f'action="{e(CLAIM_FORM_URL)}" method="post"'
@@ -900,7 +1112,7 @@ def claim_page():
     step_html = "".join(f'<li><span class="pic">{icon(ic)}</span><span><b>{e(t)}</b> {e(d)}</span></li>' for ic, t, d in steps)
     body = f"""
 <h1>Claim your club's listing</h1>
-<p class="lead">Keep your hours, prices and dancer terms current in one place customers and dancers already check. It's free, and it never changes your rating.</p>
+<p class="lead">Keep your hours, prices, dancer terms and booking line current in one place customers and dancers already check. It's free, and it never changes your rating.</p>
 
 <section aria-labelledby="how-h">
 <h2 id="how-h">How it works</h2>
@@ -912,6 +1124,7 @@ def claim_page():
 <ul>
 <li>Your details appear as your own words, never as our finding, and they never change your rating. <a href="method.html">Ratings come from public records</a>.</li>
 <li>A hiring notice appears only when you also publish how dancers are classified, your house fee and your tip-out.</li>
+<li>Your booking line and audition hours appear only after we confirm you speak for the club, and only with your dancer terms. Give the club's own number, never a personal phone, and a role to ask for, never a name. We never take these from dancer reports.</li>
 <li>Prices are for what's on your posted menu: cover, drinks, dances and VIP time.</li>
 <li>We never publish names, stage names, photos or contact details for dancers or staff.</li>
 <li>We edit or remove anything false, explicit, or that suggests anything beyond legal entertainment.</li>
@@ -924,6 +1137,223 @@ def claim_page():
     return page("claim.html", "Claim your club's listing",
                 "Club owners and managers: add your hours, prices and dancer terms to your listing, free. Your details never change your rating.",
                 body)
+
+
+def state_page(st):
+    name = STATE_NAMES.get(st, st)
+    clubs = sorted((c for c in CLUBS if c["state"] == st), key=lambda c: (c["city"], c["name"]))
+    stc = Counter(c["status"] for c in clubs)
+    open_n = stc.get("verified", 0) + stc.get("reported-open", 0)
+    n_recs = sum(len(RECORDS_BY_CLUB.get(c["id"], [])) for c in clubs)
+    with_recs = sum(1 for c in clubs if c["id"] in RECORDS_BY_CLUB)
+    rows = []
+    for c in clubs:
+        s_label, s_icon, s_tone = STATUS.get(c["status"], (c["status"], "question", "muted"))
+        f_label, f_icon, f_tone = FLAG.get(c["overall_flag"], (c["overall_flag"], "question", "muted"))
+        n = len(RECORDS_BY_CLUB.get(c["id"], []))
+        recs = (f'<a href="{club_page_name(c["id"])}#record">{plural(n, "record")}'
+                f'<span class="sr"> for {e(c["name"])}</span></a>') if n else "None yet"
+        operator = f'<span class="sub">Operator: {e(c["operator"])}</span>' if c["operator"] else ""
+        rows.append(
+            f'<tr><th scope="row"><a class="clubname" href="{club_page_name(c["id"])}">{e(c["name"])}</a>'
+            f'{info_badges(c["id"])}{operator}</th><td>{e(c["city"])}</td>'
+            f'<td>{badge(s_label, s_icon, s_tone)}</td><td>{badge(f_label, f_icon, f_tone)}</td><td>{recs}</td></tr>')
+    anchor = law_anchor(st)
+    if anchor:
+        laws = f'<p>See <a href="laws.html#{anchor}">{e(name)} in our laws guide</a>: what the state allows and requires.</p>'
+    else:
+        laws = (f"<p>We haven't written up {e(name)}'s laws yet. Start with "
+                f'<a href="laws.html#federal-baseline">the federal rules that apply everywhere</a>.</p>')
+    extra = '<p>More on Ohio: <a href="ohio.html">our Ohio research notes</a>.</p>' if st == "OH" else ""
+    records = ""
+    if n_recs:
+        records = (f'<section aria-labelledby="recs-h"><h2 id="recs-h">Public records</h2>'
+                   f'<p>{plural(n_recs, "public record")} tied to {plural(with_recs, "club")} here. '
+                   f'Each club\'s page lists its own. <a href="records.html?state={st}">See them on the records page</a>, '
+                   f'most serious first.</p></section>')
+    body = f"""
+<p class="back"><a href="directory.html#by-state">All states</a></p>
+<h1>Strip clubs in {e(name)}</h1>
+<p class="lead">{plural(len(clubs), "club")} listed so far, {open_n} of them reported or verified open. Every listing links to its source.</p>
+<ul class="stats">
+<li><b>{len(clubs)}</b> <span>{"club" if len(clubs) == 1 else "clubs"} listed</span></li>
+<li><b>{open_n}</b> <span>reported or verified open</span></li>
+<li><b>{n_recs}</b> <span>public {"record" if n_recs == 1 else "records"}</span></li>
+</ul>
+
+<section aria-labelledby="clubs-h">
+<h2 id="clubs-h">Clubs in {e(name)}</h2>
+<div class="callout">{icon("info")}<p>A listing is not an endorsement, and "not reviewed" means we haven't finished checking, not that a club is safe or unsafe. See <a href="directory.html#status-key">what the status means</a> and <a href="directory.html#rating-key">what the rating means</a>.</p></div>
+<div class="tablewrap" role="region" tabindex="0" aria-labelledby="state-cap">
+<table class="dir">
+<caption id="state-cap">Clubs in {e(name)}, by city</caption>
+<thead><tr><th scope="col">Club</th><th scope="col">City</th><th scope="col">Status</th><th scope="col">Rating</th><th scope="col">Public records</th></tr></thead>
+<tbody>{"".join(rows)}</tbody>
+</table>
+</div>
+</section>
+{records}
+<section aria-labelledby="laws-h">
+<h2 id="laws-h">The law in {e(name)}</h2>
+{laws}
+{extra}
+</section>
+<p>Know a club we're missing, or one that's closed? <a href="about.html#corrections">Send a correction</a>. Run one of these clubs? <a href="claim.html">Claim your listing</a>.</p>
+"""
+    return page(state_page_name(st), f"Strip clubs in {name}",
+                f"{plural(len(clubs), 'strip club')} in {name}, with status, public records and sources for each.",
+                body, wide=True)
+
+
+HOUSE_FEES = read_csv("data/house-fees.csv")
+FEE_BASIS = OrderedDict([
+    ("law", "State law or rule"),
+    ("court-finding", "Court finding"),
+    ("settlement", "Settlement term. Not an admission."),
+    ("alleged", "Alleged in a lawsuit"),
+    ("dancer-account", "Dancers' account, as reported"),
+    ("news", "News report"),
+])
+
+
+def fee_states(value):
+    """Display name and sort key for the state column of house-fees.csv."""
+    m = re.fullmatch(r"multi-state \((\d+)\)", value.strip())
+    if m:
+        return f"{m.group(1)} states", "~~"
+    names = [STATE_NAMES.get(x.strip(), x.strip()) for x in value.split(";")]
+    if len(names) == 1:
+        return names[0], names[0]
+    text = ", ".join(names[:-1]) + " and " + names[-1]
+    return text, "~" + text
+
+
+def check_house_fees():
+    errs = []
+    for n, r in enumerate(HOUSE_FEES, 2):
+        where = f"data/house-fees.csv line {n}"
+        if r["basis"] not in FEE_BASIS:
+            errs.append(f"{where}: basis must be one of {', '.join(FEE_BASIS)}")
+        if not r["source_url"].startswith("http"):
+            errs.append(f"{where}: needs a source URL")
+        for code in re.findall(r"\b[A-Z]{2}\b", r["state"]):
+            if code not in STATE_NAMES:
+                errs.append(f"{where}: unknown state {code}")
+    if errs:
+        raise SystemExit("House fee problems:\n" + "\n".join(errs))
+
+
+check_house_fees()
+
+
+def dancer_pay_page():
+    rows = []
+    for r in sorted(HOUSE_FEES, key=lambda r: (fee_states(r["state"])[1], r["year"] or "0000", r["club_name"])):
+        st_name = fee_states(r["state"])[0]
+        city = r["city"].strip()
+        if r["club_name"]:
+            place = f'{e(r["club_name"])}' + (f'<span class="sub">{e(city)}</span>' if city else "")
+        elif city.lower() == "statewide":
+            place = "Statewide"
+        else:
+            place = e(city) if city else "Club not named"
+        alleged = "<b>Alleged:</b> " if r["basis"] == "alleged" else ""
+        cond = f'<span class="sub">{e(r["conditions"])}</span>' if r["conditions"] else ""
+        outcome = f'<span class="sub">{e(r["outcome"])}</span>' if r["outcome"] else ""
+        rows.append(
+            f'<tr><th scope="row">{e(st_name)}</th><td>{place}</td><td>{e(r["year"] or "Not given")}</td>'
+            f'<td>{e(r["item"])}</td><td>{alleged}{e(r["amount"])}{cond}</td>'
+            f'<td>{e(FEE_BASIS[r["basis"]])}{outcome}</td><td class="srcs">{source_links(r["source_url"])}</td></tr>')
+    wa_law = "https://lawfilesext.leg.wa.gov/Biennium/2023-24/Pdf/Bill%20Reports/Senate/6105-S.E%20SBR%20FBR%2024.pdf"
+    wa_rule = "https://lni.wa.gov/rulemaking-activity/AO24-09/2409CR103.pdf"
+    wa_before = "https://www.cascadepbs.org/politics/2023/02/seattle-exotic-dancers-organize-improve-predatory-conditions"
+    asks = [
+        "The club, and the month and year you worked there",
+        "The shift: weekday or weekend, day or night",
+        "The house fee for that shift",
+        "What you tipped out to staff that shift, in total",
+        "The price of one private dance, and what you kept from it",
+        "Whether the club charged fines",
+    ]
+    ask_html = "".join(f'<li class="todo"><span class="box" aria-hidden="true"></span>{e(a)}</li>' for a in asks)
+    if DANCER_FORM_URL:
+        host = re.sub(r"^www\.", "", re.sub(r"^https?://([^/]+).*$", r"\1", DANCER_FORM_URL))
+        form = (f'<p><a class="btnlink" href="{e(DANCER_FORM_URL)}">{icon("file")}<span>Open the anonymous report form'
+                f'</span></a></p><p>The form opens on {e(host)}, a form service. It takes about two minutes.</p>')
+    else:
+        form = ('<div class="panel"><h3 id="soon">Reports open soon</h3><p>The anonymous form isn\'t open yet. '
+                'When it is, the button to it will be right here. Nothing on this site asks for your name.</p></div>')
+    shown = [(c, dancer_summary(c["id"])) for c in CLUBS]
+    shown = [(c, sm) for c, sm in shown if sm]
+    if shown:
+        trs = "".join(
+            f'<tr><th scope="row"><a href="{club_page_name(c["id"])}#dancers-say">{e(c["name"])}</a>'
+            f'<span class="sub">{e(c["city"])}, {e(c["state"])}</span></th><td>{sm["count"]}</td><td>{e(sm["span"])}</td></tr>'
+            for c, sm in sorted(shown, key=lambda x: (x[0]["state"], x[0]["city"], x[0]["name"])))
+        enough = ('<div class="tablewrap" role="region" tabindex="0" aria-label="Clubs with enough dancer reports">'
+                  '<table><thead><tr><th scope="col">Club</th><th scope="col">Reports</th><th scope="col">Months</th>'
+                  f'</tr></thead><tbody>{trs}</tbody></table></div>')
+    else:
+        enough = "<p>No club has enough reports yet.</p>"
+    body = f"""
+<h1>House fees and dancer pay</h1>
+<p class="lead">What clubs have charged dancers to work: house fees, required tips to staff, fines and quotas, by state. The numbers come from state law, court records and the news. A number from a lawsuit is what the dancers alleged, unless a court found it.</p>
+<div class="callout">{icon("scale")}<p><b>How to read this page.</b> &ldquo;Alleged in a lawsuit&rdquo; is the dancers' claim, not a finding. A settlement isn't an admission. &ldquo;Court finding&rdquo; is what a court ruled. &ldquo;Dancers' account&rdquo; is what dancers told reporters or a dancer group. No dancers are named here.</p></div>
+
+<section aria-labelledby="wa-h">
+<h2 id="wa-h">Washington caps house fees</h2>
+<p>Since January 1, 2025, Washington law limits what a club can charge a dancer to work (<a href="{wa_law}">final bill report</a>):</p>
+<ul>
+<li>Over any 8 hours, the fee can't be more than $150 or 30% of what the dancer collected outside private rooms, whichever is less, plus 30% of what the dancer collected in private rooms.</li>
+<li>The fee can't be more than the dancer took in during that time.</li>
+<li>It has to be the same for every dancer, in a written contract that explains how the club estimates a dancer's take, and fixed for at least three months.</li>
+<li>No late fees, no fee for missing a shift, and no unpaid fees carried forward as &ldquo;back rent.&rdquo;</li>
+<li>A room fee charged when no dance happens doesn't count as money the dancer collected, and clubs must post signs saying dancers can't be made to hand over tips (<a href="{wa_rule}">state rules, December 2024</a>).</li>
+</ul>
+<p>Before the law, a state advisory committee put Washington house fees at $65 to $165 a shift, with the average above $100 (<a href="{wa_before}">Cascade PBS</a>). Other states' rules are in our <a href="laws.html">laws guide</a>, and <a href="dancers.html#how-to-file-a-wage-complaint">here's how to file a wage complaint</a>.</p>
+</section>
+
+<section aria-labelledby="fees-h">
+<h2 id="fees-h">What clubs have charged, by state</h2>
+<div class="tablewrap" role="region" tabindex="0" aria-labelledby="fees-cap">
+<table>
+<caption id="fees-cap">{len(HOUSE_FEES)} fees, prices and rules from {len({fee_states(r["state"])[0] for r in HOUSE_FEES})} states and groups of states</caption>
+<thead><tr><th scope="col">State</th><th scope="col">Club</th><th scope="col">Year</th><th scope="col">What</th><th scope="col">Amount</th><th scope="col">What it rests on</th><th scope="col">Source</th></tr></thead>
+<tbody>{"".join(rows)}</tbody>
+</table>
+</div>
+<p>Download this table: <a href="data/house-fees.csv" download>house-fees.csv</a>. What a club says about its own fees is on its page, under &ldquo;What the club says.&rdquo;</p>
+</section>
+
+<section aria-labelledby="dancer-reports">
+<h2 id="dancer-reports">Dancer reports</h2>
+<p>Dancers know what clubs really charge. Tell us, anonymously, and we'll show the numbers once enough dancers agree.</p>
+<h3 id="asks-h">What the form asks</h3>
+<ul class="checklist">{ask_html}</ul>
+<p>That's all. Every answer is a number or a choice from a list. There's no comment box, so there's nowhere for a name to go.</p>
+<h3 id="never-h">What we never collect</h3>
+<ul>
+<li>Your name or stage name</li>
+<li>Your email or phone number</li>
+<li>Your IP address. The form is set up not to store it.</li>
+<li>Anyone else's name: managers, staff, customers or other dancers</li>
+</ul>
+<h3 id="when-h">When numbers appear</h3>
+<ul>
+<li>A club's numbers appear only after {DANCER_REPORT_MIN} separate reports from the last {DANCER_REPORT_MONTHS} months.</li>
+<li>We show a range and the middle value, never one dancer's report.</li>
+<li>We read every report before it counts, and set aside ones that look like spam or a pile-on.</li>
+<li>Dancer numbers never change a club's rating. Ratings come from <a href="method.html">public records</a>.</li>
+<li>Abuse, harassment and trafficking aren't published from this form. If it's happening to you, <a href="dancers.html#get-help-now">use the free help lines</a>.</li>
+</ul>
+{form}
+<h3 id="enough-h">Clubs with enough reports</h3>
+{enough}
+</section>
+"""
+    return page("dancer-pay.html", "House fees and dancer pay",
+                "What strip clubs have charged dancers to work, by state, from laws, court records and the news, and how to report your club's fees anonymously.",
+                body, wide=True)
 
 
 def readme_section(title):
@@ -1016,6 +1446,11 @@ def home_page():
 <p>The U.S. has roughly 3,900 strip clubs, so this is a state-by-state build. <a href="coverage.html">See the coverage plan</a>.</p>
 </section>
 
+<section aria-labelledby="states-h">
+<h2 id="states-h">Clubs by state</h2>
+{state_links()}
+</section>
+
 <section aria-labelledby="rules-h">
 <h2 id="rules-h">Ground rules</h2>
 {readme_section("Ground rules")}
@@ -1084,6 +1519,8 @@ def main():
     shutil.copy(ROOT / "data/clubs.csv", OUT / "data/clubs.csv")
     shutil.copy(ROOT / "data/evidence.csv", OUT / "data/evidence.csv")
     shutil.copy(ROOT / "data/club-info.csv", OUT / "data/club-info.csv")
+    shutil.copy(ROOT / "data/house-fees.csv", OUT / "data/house-fees.csv")
+    shutil.copy(ROOT / "data/dancer-reports.csv", OUT / "data/dancer-reports.csv")
     (OUT / ".nojekyll").write_text("")
 
     pages = ["index.html", "directory.html", "records.html", "about.html"]
@@ -1100,6 +1537,11 @@ def main():
         pages.append(club_page_name(c["id"]))
     write("claim.html", claim_page())
     pages.append("claim.html")
+    for st in states_in_data():
+        write(state_page_name(st), state_page(st))
+        pages.append(state_page_name(st))
+    write("dancer-pay.html", dancer_pay_page())
+    pages.append("dancer-pay.html")
 
     write("index.html", home_page())
     write("directory.html", directory_page())
