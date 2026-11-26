@@ -28,10 +28,9 @@ STATIC = Path(__file__).resolve().parent / "static"
 # Settings. Fill these in at launch.
 # ---------------------------------------------------------------------------
 SITE_NAME = "Strip Club Etiquette"
-# Full address of the live site with no trailing slash, such as
-# "https://stripclubetiquette.org". Leave empty until there is one: it turns on
-# canonical links and the sitemap.
-SITE_URL = ""
+# Full address of the live site with no trailing slash. It turns on canonical
+# links, the sitemap and the CNAME file. Leave empty to build with none of them.
+SITE_URL = "https://stripclubguide.org"
 # GoatCounter site code, such as "stripclubetiquette" for
 # stripclubetiquette.goatcounter.com. Leave empty to build with no counter.
 GOATCOUNTER = ""
