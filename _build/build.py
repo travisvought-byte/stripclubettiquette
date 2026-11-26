@@ -1265,8 +1265,14 @@ def club_page(c):
         facts.append(("Notes", e(c["notes"])))
     dl = "".join(f"<dt>{e(k)}</dt><dd>{v}</dd>" for k, v in facts)
     recs = RECORDS_BY_CLUB.get(c["id"], [])
-    rec_html = records_table(c, recs) if recs else "<p>No public records tied to this club yet.</p>"
     sa = SA_BY_CLUB.get(c["id"])
+    if recs:
+        rec_html = records_table(c, recs)
+    elif sa:
+        rec_html = (f'<p>Its court and agency records are on the '
+                    f'<a href="stay-away.html#{e(sa["place_id"])}">stay-away list</a>.</p>')
+    else:
+        rec_html = "<p>No public records tied to this club yet.</p>"
     sa_html = ""
     if sa:
         label, ic, tone = SA_LISTS[sa["list"]]
