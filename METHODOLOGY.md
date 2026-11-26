@@ -91,8 +91,8 @@ Clubs can add their own hours, prices and dancer terms to their listing, free.
 
 Dancers can report what a club charges them, anonymously. These rules keep reports safe for the dancer and fair to the club.
 
-- **Anonymous:** the form asks for no name, stage name, email or phone number, and it's set up not to store IP addresses. We don't build dancer accounts.
-- **Numbers only:** the club, the month and year, the shift (weekday or weekend, day or night), the house fee, total tips to staff, the price of one private dance and what the dancer kept, and whether the club charged fines. Every answer is a number or a choice from a list. There's no free-text box, so there's nowhere to put a name.
+- **Anonymous:** the form asks for no name, stage name, email or phone number, and we don't build dancer accounts. It runs on Tally, a form service, which like most websites can log technical data such as IP addresses. The form says so, and suggests cellular data or a VPN for extra privacy.
+- **Numbers only:** the club (picked from a list), roughly when the shift was, the shift (weekday or weekend, day or night), arrival time, the house fee and whether it goes up for arriving later, total tips to staff, the price of one private dance and what the dancer kept, whether the club charged fines, and whether the club pays dancers as employees or contractors. Every answer is a number, a time or a choice from a list. There's no free-text box, so there's nowhere to put a name.
 - **No names, ever:** not the dancer's, and not a manager's, staff member's, customer's or another dancer's. A report that somehow carries one is dropped.
 - **Three-report minimum:** a club's numbers appear only after 3 separate reports from the last 12 months. We show the range and the middle value, never a single report, and a field shows only when at least 3 reports answered it.
 - **Reviewed first:** we read every report before it goes into [data/dancer-reports.csv](data/dancer-reports.csv), and set aside spam, outliers we can't explain, and bursts that look like a pile-on.

@@ -45,10 +45,10 @@ CLAIM_FORM_URL = ""
 CLAIM_EMAIL = "veteranhomeguardians@gmail.com"
 # Club-supplied details older than this many days are marked as possibly out of date.
 CLUB_INFO_STALE_DAYS = 180
-# Where dancers send anonymous pay reports: the address of a form service set up to
-# store no names, emails or IP addresses. Leave empty and the dancer pay page lists
-# what the form will ask and says reports open soon.
-DANCER_FORM_URL = ""
+# Where dancers send anonymous pay reports: a Tally form that asks for no names,
+# emails or phone numbers. Club pages add ?club_id= so the club is filled in. Leave
+# empty and the dancer pay page lists what the form will ask and says reports open soon.
+DANCER_FORM_URL = "https://tally.so/r/2jPKQ9"
 # A club's dancer-reported numbers show only once at least this many separate
 # reports from the last DANCER_REPORT_MONTHS months are in data/dancer-reports.csv.
 DANCER_REPORT_MIN = 3
@@ -430,6 +430,8 @@ REPORT_NUMBERS = [
     ("dance_price", "Price of one private dance"),
     ("dancer_share", "What the dancer kept from one private dance"),
 ]
+FEE_RISES = OrderedDict([("yes", "yes"), ("no", "no"), ("unsure", "not sure")])
+PAY_TYPES = OrderedDict([("employee", "employee"), ("contractor", "contractor"), ("unsure", "not sure")])
 REPORTS_BY_CLUB = {}
 
 
@@ -451,6 +453,12 @@ def check_dancer_reports():
                 errs.append(f"{where}: {f} must be whole dollars or blank")
         if row["fines"] not in ("", "yes", "no"):
             errs.append(f"{where}: fines must be yes, no or blank")
+        if row["arrival"] and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", row["arrival"]):
+            errs.append(f"{where}: arrival must be a 24-hour time like 21:30, or blank")
+        if row["fee_rises_late"] not in ("", *FEE_RISES):
+            errs.append(f"{where}: fee_rises_late must be one of {', '.join(FEE_RISES)} or blank")
+        if row["pay_type"] not in ("", *PAY_TYPES):
+            errs.append(f"{where}: pay_type must be one of {', '.join(PAY_TYPES)} or blank")
         try:
             date.fromisoformat(row["added"])
         except ValueError:
@@ -475,6 +483,21 @@ def month_name(ym):
     return f"{date(int(y), int(m), 1):%b} {y}"
 
 
+def clock(minutes):
+    """Minutes after midnight (may run past 24 hours) as a 12-hour time like 9:30 PM."""
+    h, m = divmod(minutes % (24 * 60), 60)
+    return f"{h % 12 or 12}{':%02d' % m if m else ''} {'AM' if h < 12 else 'PM'}"
+
+
+def answer_counts(rows, field, labels):
+    """Like "yes in 3, no in 1 (4 reports)", or None with fewer than DANCER_REPORT_MIN answers."""
+    vals = [r[field] for r in rows if r[field]]
+    if len(vals) < DANCER_REPORT_MIN:
+        return None
+    parts = [f"{label} in {vals.count(k)}" for k, label in labels.items() if vals.count(k)]
+    return f"{', '.join(parts)} ({len(vals)} reports)"
+
+
 def dancer_summary(club_id):
     """Ranges from recent reports, or None when there aren't enough to show anything."""
     recent = [r for r in REPORTS_BY_CLUB.get(club_id, []) if r["month"] >= report_cutoff()]
@@ -491,6 +514,18 @@ def dancer_summary(club_id):
     fines = [r["fines"] for r in recent if r["fines"]]
     if len(fines) >= DANCER_REPORT_MIN:
         lines.append(("Fines charged", f"{fines.count('yes')} of {len(fines)} reports"))
+    rises = answer_counts(recent, "fee_rises_late", FEE_RISES)
+    if rises:
+        lines.append(("House fee goes up for arriving later", rises))
+    # Arrival times before 6 AM count as the end of the night before, so a range
+    # like 9 PM to 1 AM sorts the way a night shift runs.
+    arrive = sorted(int(a[:2]) * 60 + int(a[3:]) + (24 * 60 if a < "06:00" else 0)
+                    for a in (r["arrival"] for r in recent) if a)
+    if len(arrive) >= DANCER_REPORT_MIN:
+        lines.append(("Arrival times reported", f"{clock(arrive[0])} to {clock(arrive[-1])} ({len(arrive)} reports)"))
+    paid = answer_counts(recent, "pay_type", PAY_TYPES)
+    if paid:
+        lines.append(("Paid as", paid))
     months = sorted(r["month"] for r in recent)
     return {"count": len(recent), "span": f"{month_name(months[0])} to {month_name(months[-1])}",
             "lines": lines}
@@ -1025,8 +1060,13 @@ def dancer_reports_section(c):
     return f"""<section aria-labelledby="dancers-say">
 <h2 id="dancers-say">What dancers report</h2>
 {inner}
-<p><a href="dancer-pay.html#dancer-reports">Dance here? Report this club's fees anonymously</a></p>
+<p><a href="{report_link(c)}">Dance here? Report this club's fees anonymously</a></p>
 </section>"""
+
+
+def report_link(c):
+    """The anonymous form with this club filled in, or the dancer pay page until the form is open."""
+    return f"{DANCER_FORM_URL}?club_id={c['id']}" if DANCER_FORM_URL else "dancer-pay.html#dancer-reports"
 
 
 CLAIM_ASK = [
@@ -1268,12 +1308,14 @@ def dancer_pay_page():
     wa_rule = "https://lni.wa.gov/rulemaking-activity/AO24-09/2409CR103.pdf"
     wa_before = "https://www.cascadepbs.org/politics/2023/02/seattle-exotic-dancers-organize-improve-predatory-conditions"
     asks = [
-        "The club, and the month and year you worked there",
+        "The club, picked from a list",
+        "Roughly when: this month, last month, 2 to 6 months ago, or 7 to 12 months ago",
         "The shift: weekday or weekend, day or night",
+        "What time you arrived, and whether the house fee goes up for arriving later",
         "The house fee for that shift",
         "What you tipped out to staff that shift, in total",
         "The price of one private dance, and what you kept from it",
-        "Whether the club charged fines",
+        "Whether the club fined you, and whether it pays you as an employee or a contractor",
     ]
     ask_html = "".join(f'<li class="todo"><span class="box" aria-hidden="true"></span>{e(a)}</li>' for a in asks)
     if DANCER_FORM_URL:
@@ -1330,14 +1372,14 @@ def dancer_pay_page():
 <p>Dancers know what clubs really charge. Tell us, anonymously, and we'll show the numbers once enough dancers agree.</p>
 <h3 id="asks-h">What the form asks</h3>
 <ul class="checklist">{ask_html}</ul>
-<p>That's all. Every answer is a number or a choice from a list. There's no comment box, so there's nowhere for a name to go.</p>
+<p>That's all. Every answer is a number, a time or a choice from a list. There's no comment box, so there's nowhere for a name to go.</p>
 <h3 id="never-h">What we never collect</h3>
 <ul>
 <li>Your name or stage name</li>
 <li>Your email or phone number</li>
-<li>Your IP address. The form is set up not to store it.</li>
 <li>Anyone else's name: managers, staff, customers or other dancers</li>
 </ul>
+<p>The form runs on Tally, a form service. Like most websites, Tally can log technical data such as your IP address. For extra privacy, use cellular data or a VPN.</p>
 <h3 id="when-h">When numbers appear</h3>
 <ul>
 <li>A club's numbers appear only after {DANCER_REPORT_MIN} separate reports from the last {DANCER_REPORT_MONTHS} months.</li>
