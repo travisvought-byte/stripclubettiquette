@@ -105,11 +105,14 @@ Anonymous reports from dancers about what a club charges. Numbers and dates only
 |---|---|
 | `report_id` | `R-0001` and up. Never reused. |
 | `club_id` | Matches `id` in `clubs.csv` |
-| `month` | Month worked (YYYY-MM) |
+| `month` | Month worked (YYYY-MM). The form asks roughly when, so for "2 to 6 months ago" we record 4 months before the report came in, and for "7 to 12 months ago", 9 months. |
 | `shift` | `weekday-day`, `weekday-night`, `weekend-day`, `weekend-night`, or blank |
+| `arrival` | 24-hour time the dancer arrived, like `21:30`, or blank |
 | `house_fee`, `tip_out` | Whole dollars for that shift. `tip_out` is the total tipped to staff. |
+| `fee_rises_late` | `yes`, `no`, `unsure`, or blank: whether the house fee goes up for arriving later |
 | `dance_price`, `dancer_share` | Whole dollars: the price of one private dance, and what the dancer kept from it |
 | `fines` | `yes`, `no`, or blank: whether the club charged fines |
+| `pay_type` | `employee`, `contractor`, `unsure`, or blank: how the club pays the dancer |
 | `added` | Date the report was reviewed and added (YYYY-MM-DD) |
 
 The build stops if a row breaks a rule.
