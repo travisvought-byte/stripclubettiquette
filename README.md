@@ -11,7 +11,7 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 ## Who this is for
 
 - **Customers:** how to act, what to expect, how to avoid getting ripped off, and how to spot trouble.
-- **Dancers:** what fair treatment looks like and where to get help.
+- **Dancers:** your rights, what fair treatment looks like, and where to get help. See [guides/for-dancers.md](guides/for-dancers.md).
 - **Club owners and managers:** how the money really works, where clubs lose money and licenses, and what the best-run clubs do differently.
 - **Advocates and officials:** trafficking indicators, model policies, and a sourced record of how clubs operate.
 
@@ -20,6 +20,7 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 | Path | What it is |
 |---|---|
 | [guides/etiquette.md](guides/etiquette.md) | Customer etiquette: before you go, tipping, private dances, VIP rooms, what not to do |
+| [guides/for-dancers.md](guides/for-dancers.md) | For dancers: contractor or employee, tips, fees, filing a wage claim, harassment, organizing, getting out |
 | [guides/how-strip-clubs-work.md](guides/how-strip-clubs-work.md) | The business model: who earns what, fees, the contractor vs. employee fight, regulation |
 | [guides/for-club-operators.md](guides/for-club-operators.md) | Playbook for owners and managers: cut legal risk, protect dancers, earn a better rating |
 | [guides/human-trafficking.md](guides/human-trafficking.md) | Recognizing and reporting trafficking, for customers, staff, dancers and advocates |
@@ -31,6 +32,7 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 | [data/README.md](data/README.md) | Field definitions for both data files |
 | [research/national.md](research/national.md) | National scope, counts and build plan |
 | [research/ohio.md](research/ohio.md) | Ohio coverage, sources, key cases and open leads |
+| [_build/](_build/) | The website build: turns the guides and data into a static, accessible site |
 
 ## Where things stand (November 22, 2026)
 
@@ -47,6 +49,17 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 4. Clubs can correct their listing or respond to any record. See [METHODOLOGY.md](METHODOLOGY.md#corrections-and-responses).
 5. Ratings are never for sale.
 6. Most dancers are adults working by choice, and dancing is not trafficking. The goal is safer, fairer clubs, and real trafficking that's easier to spot and stop.
+
+## Website
+
+The guides and data are published as a static website. The Markdown and CSV files are the source; the site is generated from them.
+
+- Build: `pip install -r _build/requirements.txt`, then `python3 _build/build.py`. The site lands in `_site/`.
+- Check: `python3 _build/check.py` fails on broken links, missing anchors, missing labels, heading jumps or low color contrast. GitHub Actions runs the build and the check on every pull request and every push to `main`.
+- Accessibility: built to WCAG 2.1 AA. Every page has a skip link, a help bar with the hotline (call and text) and a quick exit button, labeled landmarks, scrollable tables with headers, icons paired with words, light and dark mode, and works without JavaScript.
+- Settings at the top of `_build/build.py`: `SITE_URL` (turns on canonical links and the sitemap), `GOATCOUNTER` (visit counter code), `CONTACT_EMAIL`.
+- Publishing is off. To go live: make the repository public (GitHub Pages on a private repository needs a paid plan), set Pages to deploy from GitHub Actions, and set the repository variable `PAGES_ENABLED` to `true`.
+- Not published on the site: the Ohio "Open leads" list, which holds unconfirmed addresses.
 
 ## Corrections and contributions
 

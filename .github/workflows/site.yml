@@ -1,0 +1,52 @@
+name: Website
+
+# Builds the site from the Markdown guides and CSV data, then checks links and
+# accessibility. Publishing is off until the repository variable PAGES_ENABLED
+# is set to "true" (Settings > Secrets and variables > Actions > Variables)
+# and Pages is set to deploy from GitHub Actions.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install Markdown
+        run: pip install -r _build/requirements.txt
+      - name: Build
+        run: python3 _build/build.py
+      - name: Check links and accessibility
+        run: python3 _build/check.py
+      - name: Upload site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && vars.PAGES_ENABLED == 'true'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
