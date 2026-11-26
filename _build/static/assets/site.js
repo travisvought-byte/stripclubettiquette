@@ -50,6 +50,41 @@
     form.addEventListener("input", function () { clearTimeout(timer); timer = setTimeout(run, 250); });
     form.addEventListener("submit", function (ev) { ev.preventDefault(); run(); });
   }
+  // Records filter. Every record shows without JavaScript; a state named in the
+  // address (?state=OH) is picked on load.
+  var rform = document.getElementById("recfilter");
+  if (rform) {
+    var rsel = rform.elements.state;
+    var rrows = Array.prototype.slice.call(document.querySelectorAll("[data-group] tbody tr"));
+    var rgroups = Array.prototype.slice.call(document.querySelectorAll("[data-group]"));
+    var rout = document.getElementById("rshown");
+    var rrun = function () {
+      var st = rsel.value;
+      var n = 0;
+      rrows.forEach(function (r) {
+        var ok = !st || r.dataset.state === st;
+        r.hidden = !ok;
+        if (ok) { n += 1; }
+      });
+      rgroups.forEach(function (g) {
+        var shown = g.querySelectorAll("tbody tr:not([hidden])").length;
+        g.hidden = shown === 0;
+        var c = g.querySelector("[data-count]");
+        if (c) { c.textContent = shown + (shown === 1 ? " record" : " records"); }
+      });
+      var name = st ? rsel.options[rsel.selectedIndex].text : "";
+      rout.textContent = st
+        ? "Showing " + n + " of " + rrows.length + " records, for clubs in " + name + "."
+        : "Showing all " + rrows.length + " records.";
+    };
+    var sm = /[?&]state=([A-Z]{2})/.exec(window.location.search);
+    if (sm && rsel.querySelector('option[value="' + sm[1] + '"]')) { rsel.value = sm[1]; }
+    rform.hidden = false;
+    rform.addEventListener("change", rrun);
+    rform.addEventListener("submit", function (ev) { ev.preventDefault(); rrun(); });
+    if (rsel.value) { rrun(); }
+  }
+
   // Claim form: pick the club named in the address (?club=OH-0001), and, when
   // claims go by email, open the visitor's email app with the details filled in.
   var claim = document.getElementById("claim");
