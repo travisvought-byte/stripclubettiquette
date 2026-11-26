@@ -884,7 +884,7 @@ def claim_page():
                        for _t, _i, fields in CLUB_INFO_GROUPS for _f, label in fields)
         form_html = f"""<section aria-labelledby="form-h" class="panel">
 <h2 id="form-h">What we'll ask for</h2>
-<p>The claim form opens soon. Until then, send these details as a <a href="{e(REPO_URL)}/issues/new">correction on GitHub</a>. Every field is optional except who you are and how to reach you.</p>
+<p>The claim form opens soon. Every field is optional except who you are and how to reach you.</p>
 <ul class="checklist">{asks}</ul>
 </section>"""
     steps = [
