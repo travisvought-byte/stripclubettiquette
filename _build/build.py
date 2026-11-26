@@ -40,9 +40,9 @@ REPO_URL = "https://github.com/travisvought-byte/stripclubettiquette"
 # Where club claims go. Set one: CLAIM_FORM_URL is a form service's address that
 # takes a POST; CLAIM_EMAIL opens the visitor's email app with the claim filled
 # in. With neither set, the claim page lists what we'll ask for and says claims
-# open at launch. Use an address on stripclubguide.org.
+# open soon. Claims go to Travis's Gmail, his choice.
 CLAIM_FORM_URL = ""
-CLAIM_EMAIL = ""
+CLAIM_EMAIL = "veteranhomeguardians@gmail.com"
 # Club-supplied details older than this many days are marked as possibly out of date.
 CLUB_INFO_STALE_DAYS = 180
 
@@ -878,7 +878,11 @@ def claim_form():
 
 def claim_page():
     if CLAIM_FORM_URL or CLAIM_EMAIL:
-        form_html = f'<section aria-labelledby="form-h"><h2 id="form-h">Send your details</h2>{claim_form()}</section>'
+        note = ""
+        if not CLAIM_FORM_URL:
+            note = (f'<p>The button opens your email app with your details filled in. If it doesn\'t, email them to '
+                    f'<a href="mailto:{e(CLAIM_EMAIL)}?subject=Club%20listing%20claim">{e(CLAIM_EMAIL)}</a>.</p>')
+        form_html = f'<section aria-labelledby="form-h"><h2 id="form-h">Send your details</h2>{note}{claim_form()}</section>'
     else:
         asks = "".join(f'<li class="todo"><span class="box" aria-hidden="true"></span>{e(label)}</li>'
                        for _t, _i, fields in CLUB_INFO_GROUPS for _f, label in fields)
