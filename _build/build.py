@@ -77,14 +77,157 @@ DROP_ANCHORS = {("research/ohio.md", "open-leads")}
 SKIP_SECTIONS = {"research/ohio.md": {"Open leads"}}
 
 NAV = [
-    ("etiquette.html", "Etiquette"),
-    ("dancers.html", "Dancers"),
-    ("trafficking.html", "Trafficking"),
+    ("visit.html", "Visiting"),
+    ("work.html", "Dancers"),
+    ("clubs.html", "Clubs"),
+    ("learn.html", "Learn"),
     ("directory.html", "Directory"),
-    ("laws.html", "Laws"),
-    ("operators.html", "For clubs"),
+    ("trafficking.html", "Trafficking"),
     ("about.html", "About"),
 ]
+
+# ---------------------------------------------------------------------------
+# One starting page for each kind of visitor. Each group is a heading and a
+# list of (link, icon, label, short line). "ask" is a checklist of questions
+# to put to a club, and "help" is the role's own help line.
+# ---------------------------------------------------------------------------
+ROLES = OrderedDict([
+    ("visit.html", {
+        "door": ("person", "I'm visiting a club", "What to know before you go, how to act, and how to keep your money safe"),
+        "title": "Visiting a club",
+        "desc": "What to know before you visit a strip club: age limits, cover, cash, tipping, private dances, VIP rooms, and how to avoid getting overcharged.",
+        "lead": "Going for the first time, or bringing a group? Here's what to check before you go, how to act once you're there, and how to keep your money safe.",
+        "groups": [
+            ("Plan your visit", [
+                ("etiquette.html#before-you-go", "list", "Before you go", "Age limits, hours, cover, cash and a budget"),
+                ("laws.html", "scale", "Know the local rules", "Touching, nudity and alcohol rules change by state"),
+                ("directory.html", "map", "Find a club", "Check it's open and see its public record"),
+            ]),
+            ("At the club", [
+                ("etiquette.html#at-the-door", "building", "At the door", "ID, cover and security"),
+                ("etiquette.html#at-the-stage", "dollar", "At the stage", "How tipping works"),
+                ("etiquette.html#private-dances", "person", "Private dances", "Agree on the price before it starts"),
+                ("etiquette.html#vip-and-champagne-rooms", "file", "VIP rooms", "Get the price and the time in writing"),
+                ("etiquette.html#talking-with-dancers", "message", "Talking with dancers", "Privacy, boundaries and taking no for an answer"),
+                ("etiquette.html#phones-photos-and-privacy", "shield", "Phones and photos", "Never photograph dancers or customers"),
+            ]),
+            ("Protect yourself", [
+                ("etiquette.html#protect-your-money", "dollar", "Protect your money", "Surcharges, ATM fees and padded tabs"),
+                ("etiquette.html#alcohol-and-behavior", "alert", "Alcohol and behavior", "Stay in control of your night"),
+                ("etiquette.html#groups-and-bachelor-parties", "list", "Groups and parties", "Set the budget and the rules up front"),
+                ("etiquette.html#women-and-couples", "heart", "Women and couples", "What's different, and what isn't"),
+            ]),
+        ],
+        "ask_title": "Ask the club before you go",
+        "ask": [
+            "What's the cover charge, and does it change later in the night?",
+            "Is it 18 and up, or 21 and up? Is there a dress code?",
+            "Cash only, or cards too? What's the surcharge on cards or club currency?",
+            "What does a private dance cost, and how long is one?",
+            "What does the VIP room cost, for how long, and is there a drink minimum?",
+        ],
+        "help": ("etiquette.html#if-something-seems-wrong", "If something seems wrong while you're there"),
+    }),
+    ("work.html", {
+        "door": ("heart", "I dance or work in a club", "Your pay, tips, safety and rights, and free places to get help"),
+        "title": "Dancing or working in a club",
+        "desc": "For dancers and club staff: contractor or employee, tips, house fees and fines, wage complaints, harassment, and getting out of a controlling situation.",
+        "lead": "Your pay, your tips, your safety and your rights, with free places to get help. Nothing on this site asks for your name.",
+        "groups": [
+            ("Get help now", [
+                ("dancers.html#get-help-now", "phone", "Free help lines", "Wages, harassment and trafficking, with no cost to call"),
+                ("dancers.html#if-someone-else-is-in-control", "shield", "If someone else is in control", "The signs, and help that doesn't depend on immigration status"),
+            ]),
+            ("Your money", [
+                ("dancers.html#contractor-or-employee", "scale", "Contractor or employee?", "What decides it, and why it matters"),
+                ("dancers.html#your-tips-are-yours", "dollar", "Your tips are yours", "What a club can and can't take"),
+                ("dancers.html#house-fees-tip-outs-and-fines", "file", "House fees and fines", "What's legal and what isn't"),
+                ("dancers.html#keep-a-record", "list", "Keep a record", "What to write down and where to keep it"),
+                ("dancers.html#how-to-file-a-wage-complaint", "checkbox", "File a wage complaint", "Where to file and the deadlines"),
+            ]),
+            ("Your safety", [
+                ("dancers.html#harassment-assault-and-safety", "alert", "Harassment and safety", "What a club owes you, and where to report"),
+                ("dancers.html#acting-together", "person", "Acting together", "Your right to organize with coworkers"),
+                ("trafficking.html#signs-to-watch-for", "shield", "Signs of trafficking", "For you or someone you work with"),
+            ]),
+            ("Before you audition", [
+                ("directory.html", "map", "Look up the club", "Lawsuits, settlements and permit actions, with sources"),
+                ("laws.html", "scale", "Your state's rules", "Fee caps, training and age limits"),
+                ("standard.html", "check-circle", "What a well-run club does", "The Club Safety Standard"),
+            ]),
+        ],
+        "ask_title": "Ask a club before you audition",
+        "ask": [
+            "Will I be an employee or a contractor?",
+            "What are the house fee and tip-out, in writing? Do they change by shift?",
+            "Who sets dance prices, and what share do I keep?",
+            "Are fines written down? What are they for?",
+            "Is there security on the floor and in the private rooms?",
+            "How and when am I paid?",
+        ],
+        "help": ("dancers.html#get-help-now", "Free help lines for dancers"),
+    }),
+    ("clubs.html", {
+        "door": ("building", "I run a club", "Cut legal risk, protect dancers and earn a better rating"),
+        "title": "Running a club",
+        "desc": "For strip club owners and managers: cut wage and liability risk, protect dancers and customers, meet the Club Safety Standard, and keep your listing accurate.",
+        "lead": "Cut legal risk, keep dancers and customers safe, and earn a better rating. Ratings here come from public records and the Club Safety Standard. They are never for sale.",
+        "groups": [
+            ("Start here", [
+                ("operators.html#why-this-matters-to-your-bottom-line", "dollar", "Why it pays", "What wage suits and bad nights cost a club"),
+                ("operators.html#the-playbook", "list", "The playbook", "Nine practices that cut risk"),
+                ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
+            ]),
+            ("Your listing", [
+                ("directory.html", "map", "See your listing", "Status, records and sources"),
+                ("method.html", "search", "How we rate clubs", "Records, not rumor"),
+                ("about.html#corrections", "file", "Correct or respond", "Fix a listing or answer a record"),
+            ]),
+            ("Trafficking and the law", [
+                ("trafficking.html#what-clubs-should-do", "shield", "What clubs should do", "ID checks, training, posted hotlines and no retaliation"),
+                ("laws.html", "scale", "Laws by state", "Classification, fees, training and age rules"),
+            ]),
+        ],
+        "ask_title": "What customers and dancers will ask you",
+        "ask": [
+            "Cover charge, age limit, dress code and hours",
+            "Card surcharges and the price of dances and VIP time",
+            "Employee or contractor, and the house fee in writing",
+            "Security on the floor and in private rooms",
+        ],
+        "help": ("trafficking.html#what-clubs-should-do", "How to handle a suspected trafficking case"),
+    }),
+    ("learn.html", {
+        "door": ("search", "I'm looking into the industry", "For families, reporters, officials, advocates, researchers and lenders"),
+        "title": "Learning about the industry",
+        "desc": "How strip clubs work, the laws in each state, how trafficking shows up and how it doesn't, and a sourced public record of clubs.",
+        "lead": "For families, reporters, local officials, advocates, researchers, and the banks and insurers that serve clubs.",
+        "groups": [
+            ("How it works", [
+                ("how-clubs-work.html", "dollar", "How clubs work", "Who earns what, and where the money goes"),
+                ("how-clubs-work.html#the-contractor-vs-employee-fight", "scale", "The contractor fight", "Why clubs keep ending up in court"),
+                ("laws.html", "scale", "Laws by state", "What each state allows and requires"),
+                ("laws.html#the-age-21-debate", "person", "The age-21 debate", "Laws raising the minimum age to dance"),
+            ]),
+            ("Trafficking", [
+                ("trafficking.html#what-trafficking-is", "shield", "What trafficking is", "The legal definition, in plain English"),
+                ("trafficking.html#dancing-is-not-trafficking", "heart", "Dancing is not trafficking", "Why the difference matters"),
+                ("trafficking.html#signs-to-watch-for", "alert", "Signs to watch for", "What to look for in a club"),
+                ("trafficking.html#advocacy-what-helps", "check-circle", "What helps", "Advocacy that works"),
+            ]),
+            ("The record", [
+                ("directory.html", "map", "Club directory", "Clubs with status and sources"),
+                ("records.html", "file", "Public records", "Lawsuits, settlements, permit actions and convictions"),
+                ("method.html", "search", "How we rate", "The rating method"),
+                ("data.html", "list", "Data files", "Download the data"),
+                ("coverage.html", "map", "Coverage plan", "Where the build goes next"),
+            ]),
+        ],
+        "ask_title": "",
+        "ask": [],
+        "help": ("trafficking.html#get-help-or-report", "How to report suspected trafficking"),
+    }),
+])
 
 STATUS = OrderedDict([
     ("verified", ("Verified open", "check-circle", "ok")),
@@ -484,31 +627,57 @@ def readme_section(title):
     return friendly_link_text(body)
 
 
+def tiles(items, cls="tiles"):
+    return f'<ul class="{cls}">' + "".join(
+        f'<li><a class="tile" href="{href}"><span class="pic">{icon(ic)}</span>'
+        f'<span class="tl">{e(t)}</span><span class="th">{e(sub)}</span></a></li>'
+        for href, ic, t, sub in items) + "</ul>"
+
+
+def role_page(out_name, r):
+    parts = []
+    for i, (heading, items) in enumerate(r["groups"], 1):
+        hid = f"g{i}"
+        parts.append(f'<section aria-labelledby="{hid}"><h2 id="{hid}">{e(heading)}</h2>{tiles(items)}</section>')
+    if r["ask"]:
+        qs = "".join(f'<li class="todo"><span class="box" aria-hidden="true"></span>{e(q)}</li>' for q in r["ask"])
+        parts.append(f'<section aria-labelledby="ask" class="panel"><h2 id="ask">{e(r["ask_title"])}</h2>'
+                     f'<ul class="checklist">{qs}</ul></section>')
+    href, text = r["help"]
+    parts.append(f"""<section aria-labelledby="help" class="callout">
+{icon("alert")}<div><h2 id="help">Help now</h2>
+<p>If someone is in danger, call <a href="tel:911">911</a>. To report trafficking, call the National Human Trafficking Hotline at <a href="tel:+18883737888">1-888-373-7888</a> or text <a href="sms:233733">233733</a>.</p>
+<p><a href="{href}">{e(text)}</a></p></div>
+</section>""")
+    body = f'<h1>{e(r["title"])}</h1>\n<p class="lead">{e(r["lead"])}</p>\n' + "\n".join(parts)
+    return page(out_name, r["title"], r["desc"], body)
+
+
 def home_page():
     st = Counter(c["status"] for c in CLUBS)
     oh = sum(1 for c in CLUBS if c["state"] == "OH")
-    tiles = [
-        ("etiquette.html", "person", "Customers", "How to act, what to tip, and how not to get ripped off"),
-        ("dancers.html", "heart", "Dancers", "Your rights, fees, tips, and where to get help"),
-        ("trafficking.html", "shield", "Stop trafficking", "The signs, and what to do when you see them"),
-        ("operators.html", "building", "Club owners", "Cut legal risk, protect dancers, earn a better rating"),
+    doors = [(href, ic, t, sub) for href, (ic, t, sub) in ((h, r["door"]) for h, r in ROLES.items())]
+    door_html = tiles(doors, "tiles doors")
+    more_html = tiles([
         ("directory.html", "list", "Club directory", f"{len(CLUBS)} clubs with sources and public records"),
+        ("trafficking.html", "shield", "Stop trafficking", "The signs, and what to do when you see them"),
         ("laws.html", "scale", "Laws by state", "Age limits, touching, fees and worker protections"),
         ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
-        ("how-clubs-work.html", "dollar", "How clubs work", "Who earns what, and why clubs end up in court"),
-    ]
-    tile_html = "".join(
-        f'<li><a class="tile" href="{href}"><span class="pic">{icon(ic)}</span>'
-        f'<span class="tl">{e(t)}</span><span class="th">{e(sub)}</span></a></li>' for href, ic, t, sub in tiles)
+    ])
     body = f"""
 <div class="hero">
 <h1>Strip Club Etiquette</h1>
-<p class="lead">How to be a good customer, what fair treatment looks like for dancers, and how to spot and stop human trafficking. Plain English, every claim sourced.</p>
+<p class="lead">One place for the facts about strip clubs, for customers, dancers, club owners and anyone looking in. Plain English, non-explicit, every claim sourced.</p>
 </div>
 
 <section aria-labelledby="start-h">
-<h2 id="start-h">Start here</h2>
-<ul class="tiles">{tile_html}</ul>
+<h2 id="start-h">Start with who you are</h2>
+{door_html}
+</section>
+
+<section aria-labelledby="most-h">
+<h2 id="most-h">Most used</h2>
+{more_html}
 </section>
 
 <section aria-labelledby="why-h" class="panel">
@@ -611,6 +780,10 @@ def main():
     for src, (out_name, _label, _icon) in MD_PAGES.items():
         title, desc, body = render_md(src)
         write(out_name, page(out_name, title, desc, body))
+        pages.append(out_name)
+
+    for out_name, r in ROLES.items():
+        write(out_name, role_page(out_name, r))
         pages.append(out_name)
 
     write("index.html", home_page())
