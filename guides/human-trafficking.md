@@ -75,10 +75,44 @@ No single sign proves trafficking. Several together are worth a call.
 - If someone takes your money, holds your ID, threatens you or your family, or says you owe a debt you can never pay off, that may be trafficking, even if you agreed to the work at first.
 - A debt to a club, a manager or a boyfriend is not a reason you have to stay.
 - The national hotline is confidential and helps regardless of immigration status. You can call just to talk through your options.
+- Worried about a coworker? See [Looking out for each other](dancer-safety.md#when-a-coworker-seems-controlled-or-in-danger).
+
+## Reporting safely
+
+You can report to the National Human Trafficking Hotline without giving your name. The hotline says you don't need to share your name or any identifying details unless you're comfortable doing so.
+
+**How to reach it**
+
+- **Call** 1-888-373-7888 (TTY 711). Phone is the only way to reach an interpreter: advocates speak English and Spanish, and interpreters cover more than 200 other languages.
+- **Text** 233733.
+- **Chat** at [humantraffickinghotline.org/chat](https://humantraffickinghotline.org/chat).
+- **Online tip form**, anonymous, in English and Spanish, on the [hotline's report page](https://humantraffickinghotline.org/en/report-trafficking). For anything urgent, or that happened in the last 24 hours, the hotline asks you to call, text or chat instead.
+
+**What helps to include.** You don't need all of it. Share what you know:
+
+- What you saw, and why it worries you: signs of force, lies, debt, threats or control
+- When it happened, or how long it's been going on
+- City and state
+- How many people seem to be involved, and their rough ages
+- Descriptions of the person or people in control, and any vehicles
+- Whether anyone is in danger right now
+
+**What happens to your information**
+
+- The hotline is a nonprofit, not a government agency, and not law enforcement. It passes tips to specialized law enforcement agencies.
+- It says it won't share identifying information about you with any outside agency, police included, without your explicit permission, except where the law requires it.
+- Two exceptions: hotline staff are mandated reporters, so they may report to police or child protective services when a minor is being harmed, or when someone is in immediate danger.
+- The hotline says it doesn't record calls.
+
+**Protect yourself while you report**
+
+- Use your own phone, not a club phone or a phone someone else can check.
+- If someone may look through your phone, delete the call, text or browser history afterward. The "Quick exit" button at the top of every page on this site leaves for a weather site.
+- If you're a dancer reporting about your own club or a coworker, you can ask the hotline what will happen before you give any details.
 
 ## What clubs should do
 
-The short list: check every entertainer's ID in person, pay dancers directly, train all staff every year, post the hotlines in dressing rooms and restrooms, keep private areas visible, enforce zero tolerance for "extras," and never retaliate against anyone who reports. The full playbook is in [for-club-operators.md](for-club-operators.md), and the checklist is in the [Club Safety Standard](../standards/club-safety-standard.md).
+The short list: check every entertainer's ID in person, pay dancers directly, train all staff every year, post the hotlines in dressing rooms and restrooms, keep private areas visible, enforce zero tolerance for "extras," and never retaliate against anyone who reports. The full playbook is in [for-club-operators.md](for-club-operators.md), a policy template clubs can adopt is in [Model policies and procedures](model-policies.md), and the checklist is in the [Club Safety Standard](../standards/club-safety-standard.md).
 
 ## Advocacy: what helps
 
@@ -89,7 +123,7 @@ The short list: check every entertainer's ID in person, pay dancers directly, tr
 
 ## Sources
 
-- Hotlines: [National Human Trafficking Hotline](https://humantraffickinghotline.org/report-trafficking), [U.S. Administration for Children and Families](https://acf.gov/otip/programs-services/direct-services), [Ohio Attorney General hotline page](https://ohioattorneygeneral.gov/ENDOHHT), [Ohio AG on text and app options](https://ohioattorneygeneral.gov/Media/News-Releases/January-2025/AG-Yost-Launches-App-Introduces-Other-Ways-to-Repo), [Ohio AG on BCI operation](https://ohioattorneygeneral.gov/Media/News-Releases/September-2024/New-Human-Trafficking-Hotline-Connects-Public-s-Ti), [DHS tip line (archived DHS page)](https://niwaplibrary.wcl.american.edu/wp-content/uploads/Indicators-of-Human-Trafficking-_-Homeland-Security.pdf)
+- Hotlines: [National Human Trafficking Hotline](https://humantraffickinghotline.org/report-trafficking), [hotline confidentiality policy](https://humantraffickinghotline.org/en/confidentiality-policy), [U.S. Administration for Children and Families](https://acf.gov/otip/programs-services/direct-services), [Ohio Attorney General hotline page](https://ohioattorneygeneral.gov/ENDOHHT), [Ohio AG on text and app options](https://ohioattorneygeneral.gov/Media/News-Releases/January-2025/AG-Yost-Launches-App-Introduces-Other-Ways-to-Repo), [Ohio AG on BCI operation](https://ohioattorneygeneral.gov/Media/News-Releases/September-2024/New-Human-Trafficking-Hotline-Connects-Public-s-Ti), [DHS tip line (archived DHS page)](https://niwaplibrary.wcl.american.edu/wp-content/uploads/Indicators-of-Human-Trafficking-_-Homeland-Security.pdf)
 - Legal definitions: [U.S. Department of Justice](https://www.justice.gov/humantrafficking), [18 U.S.C. 1591](https://uscode.house.gov/us/usc/t18/s1591/), [ACF on force, fraud and coercion](https://acf.gov/otip/education-training/humantrafficking)
 - How it shows up: [Polaris, The Typology of Modern Slavery (2017)](https://cdpsdocs.state.co.us/ovp/Human_Trafficking/Typology.pdf), [Polaris press release](https://polarisproject.org/news/press-releases/sex-and-labor-trafficking-redefined-typology-modern-slavery)
 - Indicators: [DHS Blue Campaign](https://dhs.gov/blue-campaign/about-blue-campaign), [DOT indicator card](https://www.transportation.gov/sites/dot.gov/files/2025-02/DOT-HT_VisorCard_English_General_508.pdf), [DHS indicator card](https://www.dhs.gov/sites/default/files/2023-07/BC_TechnologyIndicatorCard_508c.pdf)
