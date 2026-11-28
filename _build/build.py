@@ -60,9 +60,11 @@ DANCER_REPORT_MONTHS = 12
 MD_PAGES = OrderedDict([
     ("guides/etiquette.md", ("etiquette.html", "Etiquette", "person")),
     ("guides/for-dancers.md", ("dancers.html", "For dancers", "heart")),
+    ("guides/dancer-safety.md", ("dancer-safety.html", "Looking out for each other", "person")),
     ("guides/human-trafficking.md", ("trafficking.html", "Stop trafficking", "shield")),
     ("guides/why-it-keeps-happening.md", ("why-it-keeps-happening.html", "Why it keeps happening", "alert")),
     ("guides/for-club-operators.md", ("operators.html", "For clubs", "building")),
+    ("guides/model-policies.md", ("model-policies.html", "Model policies", "file")),
     ("guides/how-strip-clubs-work.md", ("how-clubs-work.html", "How clubs work", "dollar")),
     ("guides/laws-by-state.md", ("laws.html", "Laws by state", "scale")),
     ("guides/whats-working.md", ("whats-working.html", "What's working", "check-circle")),
@@ -161,6 +163,15 @@ ROLES = OrderedDict([
             ("Get help now", [
                 ("dancers.html#get-help-now", "phone", "Free help lines", "Wages, harassment and trafficking, with no cost to call"),
                 ("dancers.html#if-someone-else-is-in-control", "shield", "If someone else is in control", "The signs, and help that doesn't depend on immigration status"),
+                ("dancers.html#your-rights-at-a-glance", "scale", "Your rights at a glance", "Tips, fees, safety and speaking up, in short"),
+            ]),
+            ("Look out for each other", [
+                ("dancer-safety.html#a-buddy-system-at-work", "person", "Buddy system", "Check-ins, signals and leaving together"),
+                ("dancer-safety.html#customers-to-watch", "alert", "Customers to watch", "Red flags to pass on to security and coworkers"),
+                ("dancer-safety.html#getting-home-safely", "map", "Getting home safely", "Walking out, rides, and what to do if you're followed"),
+                ("dancer-safety.html#protect-your-privacy", "shield", "Protect your privacy", "Stage name, accounts, photos and stalking"),
+                ("dancer-safety.html#when-a-coworker-seems-controlled-or-in-danger", "heart", "When a coworker is in trouble", "The signs, and how to help without making it worse"),
+                ("dancer-safety.html#after-an-assault", "phone", "After an assault", "Getting safe, support and your options"),
             ]),
             ("Your money", [
                 ("dancers.html#contractor-or-employee", "scale", "Contractor or employee?", "What decides it, and why it matters"),
@@ -170,11 +181,14 @@ ROLES = OrderedDict([
                 ("dancer-pay.html#dancer-reports", "list", "Report your club's fees", "Anonymous, numbers only, no names"),
                 ("dancers.html#keep-a-record", "list", "Keep a record", "What to write down and where to keep it"),
                 ("dancers.html#how-to-file-a-wage-complaint", "checkbox", "File a wage complaint", "Where to file and the deadlines"),
+                ("dancers.html#money-basics-taxes-and-savings", "dollar", "Taxes and savings", "Self-employment tax, quarterly payments, and the tips deduction"),
             ]),
             ("Your safety", [
                 ("dancers.html#harassment-assault-and-safety", "alert", "Harassment and safety", "What a club owes you, and where to report"),
+                ("dancers.html#health-and-safety-at-work", "check-circle", "Health and safety at work", "OSHA complaints and low-cost health care"),
                 ("dancers.html#acting-together", "person", "Acting together", "Your right to organize with coworkers"),
                 ("trafficking.html#signs-to-watch-for", "shield", "Signs of trafficking", "For you or someone you work with"),
+                ("trafficking.html#reporting-safely", "phone", "Report safely", "Anonymous options, and what happens to your information"),
             ]),
             ("Before you audition", [
                 ("directory.html", "map", "Look up the club", "Lawsuits, settlements and permit actions, with sources"),
@@ -205,6 +219,7 @@ ROLES = OrderedDict([
                 ("operators.html#why-this-matters-to-your-bottom-line", "dollar", "Why it pays", "What wage suits and bad nights cost a club"),
                 ("operators.html#the-playbook", "list", "The playbook", "Nine practices that cut risk"),
                 ("standard.html", "checkbox", "Club Safety Standard", "The checklist any club can meet"),
+                ("model-policies.html", "file", "Model policies", "A policy and procedure template to adopt"),
                 ("whats-working.html", "check-circle", "What's working", "Fee rules, safety steps and business models with a record"),
             ]),
             ("Your listing", [
@@ -213,8 +228,17 @@ ROLES = OrderedDict([
                 ("method.html", "search", "How we rate clubs", "Records, not rumor"),
                 ("about.html#corrections", "file", "Correct or respond", "Fix a listing or answer a record"),
             ]),
+            ("Protect your dancers", [
+                ("model-policies.html#roles-and-responsibilities", "person", "Roles and responsibilities", "Safety duties for owners, managers, security, house moms, DJs and bar staff"),
+                ("model-policies.html#3-customer-conduct-warnings-ejection-and-bans", "octagon", "Customer conduct and bans", "Warnings, removal and the ban list"),
+                ("model-policies.html#5-incident-reports-and-records", "file", "Incident reports", "What to write down, and the form"),
+                ("model-policies.html#6-id-and-age-checks", "checkbox", "ID and age checks", "In person, and never hold a dancer's ID"),
+                ("model-policies.html#8-fees-tips-and-pay", "dollar", "Fees, tips and pay", "Written, capped, no debt, tips stay with the dancer"),
+                ("model-policies.html#9-staff-training", "list", "Staff training", "Topics, who takes them, and how often"),
+            ]),
             ("Trafficking and the law", [
                 ("trafficking.html#what-clubs-should-do", "shield", "What clubs should do", "ID checks, training, posted hotlines and no retaliation"),
+                ("model-policies.html#7-anti-trafficking-screening-and-response", "shield", "Screening and response", "Signs at hiring and on shift, and the steps to take"),
                 ("laws.html", "scale", "Laws by state", "Classification, fees, training and age rules"),
             ]),
         ],
@@ -245,6 +269,7 @@ ROLES = OrderedDict([
                 ("trafficking.html#what-trafficking-is", "shield", "What trafficking is", "The legal definition, in plain English"),
                 ("trafficking.html#dancing-is-not-trafficking", "heart", "Dancing is not trafficking", "Why the difference matters"),
                 ("trafficking.html#signs-to-watch-for", "alert", "Signs to watch for", "What to look for in a club"),
+                ("trafficking.html#reporting-safely", "phone", "Reporting safely", "Anonymous options, and what the hotline does with a tip"),
                 ("trafficking.html#advocacy-what-helps", "check-circle", "What helps", "Advocacy that works"),
                 ("why-it-keeps-happening.html", "alert", "Why it keeps happening", "The patterns, why it's hard to stop, and where to get help"),
                 ("stay-away.html", "octagon", "Places to stay away from", "Places tied to trafficking in court and agency records"),

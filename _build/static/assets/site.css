@@ -49,7 +49,7 @@ a:hover { text-decoration-thickness: 2px; }
 
 /* Help bar */
 .helpbar { display: flex; flex-wrap: wrap; align-items: stretch; gap: 0.4rem; padding: 0.5rem 1rem; background: var(--hb-bg); color: #fff; font-size: 0.85rem; }
-.hb-title { align-self: center; font-weight: 700; margin-right: 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.75rem; }
+.hb-title { align-self: center; font-weight: 700; margin-right: 0.25rem; text-transform: uppercase; letter-spacing: 0.04em; font-size: 0.8rem; }
 .hb { display: inline-flex; align-items: center; gap: 0.4rem; min-height: 44px; padding: 0.3rem 0.75rem; border-radius: 6px; color: #fff; text-decoration: none; line-height: 1.2; }
 .hb small { font-size: 0.8rem; opacity: 0.95; }
 .hb.red { background: var(--red); }

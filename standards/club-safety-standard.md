@@ -4,6 +4,8 @@ A checklist any club can meet. It's built from Washington State's 2024 strip clu
 
 Version 0.1 (draft), November 22, 2026
 
+A club that adopts the [Model policies and procedures](../guides/model-policies.md) template covers most of Level 1 in writing.
+
 Clubs can self-report (shown as "self-reported") or provide evidence (shown as "verified"). Evidence can be written policies, photos, training records, or a site visit.
 
 ## Level 1: Baseline

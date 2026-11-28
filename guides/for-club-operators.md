@@ -50,6 +50,8 @@ Hidden rooms invite assaults and illegal activity. After dancers at Atlanta's Ch
 
 The indicators are in [human-trafficking.md](human-trafficking.md#signs-to-watch-for).
 
+**Ready-to-adopt policies.** [Model policies and procedures](model-policies.md) turns this playbook into a written policy manual: duties for every role from owner to DJ, step-by-step procedures, and an incident report form.
+
 ### 7. Honest customer pricing
 
 Post prices for dances, VIP time and drinks, plus any dance-dollar surcharge or ATM fee. Give itemized receipts, and train staff to confirm card charges with the customer. Billing disputes turn into chargebacks, bad reviews and fraud complaints.

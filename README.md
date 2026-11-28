@@ -20,10 +20,12 @@ A national directory of U.S. strip clubs, a public-records method for judging ho
 | Path | What it is |
 |---|---|
 | [guides/etiquette.md](guides/etiquette.md) | Customer etiquette: before you go, tipping, private dances, VIP rooms, what not to do |
-| [guides/for-dancers.md](guides/for-dancers.md) | For dancers: contractor or employee, tips, fees, filing a wage claim, harassment, organizing, getting out |
+| [guides/for-dancers.md](guides/for-dancers.md) | For dancers: rights at a glance, contractor or employee, tips, fees, filing a wage claim, taxes, workplace safety and health care, harassment, organizing, getting out |
+| [guides/dancer-safety.md](guides/dancer-safety.md) | Peer safety for dancers: buddy systems, customers to watch, getting home, privacy, helping a coworker who seems controlled |
 | [guides/how-strip-clubs-work.md](guides/how-strip-clubs-work.md) | The business model: who earns what, fees, the contractor vs. employee fight, regulation |
 | [guides/for-club-operators.md](guides/for-club-operators.md) | Playbook for owners and managers: cut legal risk, protect dancers, earn a better rating |
-| [guides/human-trafficking.md](guides/human-trafficking.md) | Recognizing and reporting trafficking, for customers, staff, dancers and advocates |
+| [guides/model-policies.md](guides/model-policies.md) | Model policies and procedures clubs can adopt: roles and duties, security, bans, incident reports, ID checks, anti-trafficking, fees and tips, training (a template, not legal advice) |
+| [guides/human-trafficking.md](guides/human-trafficking.md) | Recognizing and reporting trafficking safely, for customers, staff, dancers and advocates |
 | [guides/laws-by-state.md](guides/laws-by-state.md) | Key laws by state: age limits, touching, alcohol, worker protections |
 | [guides/whats-working.md](guides/whats-working.md) | What's working: fee rules, safety steps and business models with a record, every point sourced |
 | [standards/club-safety-standard.md](standards/club-safety-standard.md) | The checklist clubs can meet: dancer safety, fair pay, anti-trafficking, honest pricing |
